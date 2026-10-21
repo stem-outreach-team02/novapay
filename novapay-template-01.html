@@ -3,226 +3,162 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaPay — Empty Feature Template</title>
+  <title>NovaPay — Pay & Withdraw</title>
   <style>
     :root {
-      --bg: #f4f5f9;
-      --card: #ffffff;
-      --ink: #1a1d29;
-      --text: #374151;
-      --muted: #5b6270;
-      --border: #d8dce6;
-      --accent: #5a50e0;
-      --tint: #eeedfb;
-      --shadow: 0 12px 30px rgba(26, 29, 41, 0.08);
-      --radius: 20px;
+      --bg: #f4f5f9; --card: #fff; --ink: #1a1d29; --text: #374151;
+      --muted: #5b6270; --border: #d8dce6; --accent: #5a50e0;
+      --tint: #eeedfb; --good: #15803d; --bad: #b91c1c;
+      --shadow: 0 12px 30px rgba(26,29,41,.08); --radius: 20px;
     }
-
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
     body {
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 45%, #edf0f7 100%);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 32px 16px 48px;
+      margin: 0; padding: 32px 16px 48px; color: var(--text); line-height: 1.5;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #fff 0%, var(--bg) 45%, #edf0f7 100%);
     }
-
-    .shell {
-      max-width: 1120px;
-      margin: 0 auto;
+    .shell { max-width: 900px; margin: 0 auto; }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
     }
-
-    .hero, .panel {
-      background: var(--card);
-      border: 1px solid rgba(216, 220, 230, 0.9);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+    h1, h2 { margin: 0 0 8px; color: var(--ink); }
+    .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: .78rem; font-weight: 700; color: var(--accent); }
+    .balance { font-size: 3rem; font-weight: 800; color: var(--ink); margin: 6px 0 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0; }
+    label { display: block; font-weight: 600; margin: 12px 0 4px; color: var(--ink); }
+    input {
+      width: 100%; padding: 10px 12px; font-size: 1rem;
+      border: 1px solid var(--border); border-radius: 12px;
     }
-
-    .hero {
-      padding: 28px;
-      margin-bottom: 18px;
-      position: relative;
-      overflow: hidden;
+    input:focus { outline: 2px solid var(--accent); }
+    button {
+      margin-top: 14px; width: 100%; padding: 12px; font-size: 1rem; font-weight: 700;
+      color: #fff; background: var(--accent); border: 0; border-radius: 12px; cursor: pointer;
     }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      inset: auto -80px -80px auto;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: rgba(90, 80, 224, 0.09);
+    button:hover { filter: brightness(1.1); }
+    button.alt { background: var(--ink); }
+    .msg { min-height: 1.4em; margin-top: 10px; font-weight: 600; }
+    .msg.ok { color: var(--good); }
+    .msg.err { color: var(--bad); }
+    ul { list-style: none; margin: 10px 0 0; padding: 0; }
+    li {
+      display: flex; justify-content: space-between; padding: 10px 12px;
+      background: var(--tint); border-radius: 12px; margin-bottom: 8px;
     }
-
-    .eyebrow {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-
-    h1, h2, h3, p { margin: 0; }
-
-    h1 {
-      font-size: clamp(2rem, 4vw, 3.3rem);
-      line-height: 1.05;
-      color: var(--ink);
-      margin-bottom: 12px;
-      max-width: 14ch;
-    }
-
-    .lede {
-      max-width: 60ch;
-      font-size: 1.05rem;
-      color: var(--text);
-      margin-bottom: 18px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .stat {
-      background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .stat .label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .stat .value {
-      font-size: 1rem;
-      color: var(--ink);
-      font-weight: 600;
-    }
-
-    .panel {
-      padding: 20px;
-    }
-
-    .placeholder {
-      border: 2px dashed var(--border);
-      border-radius: 18px;
-      background: linear-gradient(180deg, #fcfcfe 0%, #f7f8fc 100%);
-      min-height: 420px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 24px;
-    }
-
-    .placeholder-inner {
-      max-width: 520px;
-    }
-
-    .placeholder h2 {
-      color: var(--ink);
-      margin-bottom: 8px;
-      font-size: 1.4rem;
-    }
-
-    .placeholder p {
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: var(--tint);
-      color: var(--accent);
-      font-weight: 700;
-      border: 1px solid rgba(90, 80, 224, 0.12);
-    }
-
-    .footer-note {
-      margin-top: 14px;
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    @media (max-width: 720px) {
-      .hero { padding: 22px; }
-      .hero-grid { grid-template-columns: 1fr; }
-      .panel { padding: 16px; }
-      .placeholder { min-height: 320px; }
-    }
+    .out { color: var(--bad); font-weight: 700; }
+    .in { color: var(--good); font-weight: 700; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <main class="shell">
-    <section class="hero" aria-labelledby="title">
-      <div class="eyebrow">NovaPay feature starter</div>
-      <h1 id="title">Blank canvas for a student-built feature</h1>
-      <p class="lede">
-        This empty template is ready for a new NovaPay idea. Start here when a group is building
-        their own feature from scratch instead of fixing the existing exercise.
-      </p>
-      <div class="hero-grid">
-        <div class="stat">
-          <div class="label">Purpose</div>
-          <div class="value">A clean starting point</div>
-        </div>
-        <div class="stat">
-          <div class="label">Copilot use</div>
-          <div class="value">Ask, plan, build, review</div>
-        </div>
-        <div class="stat">
-          <div class="label">Persona support</div>
-          <div class="value">Designed to pair with the wizard</div>
-        </div>
-      </div>
+    <section class="card">
+      <div class="eyebrow">NovaPay</div>
+      <h1>My Account</h1>
+      <div>Available balance</div>
+      <div class="balance" id="balance">$500.00</div>
     </section>
 
-    <section class="panel">
-      <div class="placeholder">
-        <div class="placeholder-inner">
-          <h2>Insert your NovaPay feature here</h2>
-          <p>
-            Add a page title, layout, components, interactions, and whatever the students invent.
-            This file stays intentionally empty so the team can create their own experience without
-            having to delete any starter content first.
-          </p>
-          <div class="chips" aria-label="starter ideas">
-            <span class="chip">Dashboard</span>
-            <span class="chip">Savings tool</span>
-            <span class="chip">Payment flow</span>
-            <span class="chip">Support screen</span>
-            <span class="chip">Anything else</span>
-          </div>
-          <p class="footer-note">
-            Tip: pair this page with a persona prompt so Copilot can review the work from a real
-            user’s point of view.
-          </p>
-        </div>
-      </div>
+    <section class="grid">
+      <form class="card" id="payForm">
+        <h2>Pay someone</h2>
+        <label for="payee">Who are you paying?</label>
+        <input id="payee" type="text" placeholder="e.g. Sam" />
+        <label for="payAmount">Amount ($)</label>
+        <input id="payAmount" type="number" step="0.01" placeholder="0.00" />
+        <button type="submit">Pay</button>
+        <div class="msg" id="payMsg" role="status"></div>
+      </form>
+
+      <form class="card" id="withdrawForm">
+        <h2>Withdraw cash</h2>
+        <label for="wAmount">Amount ($)</label>
+        <input id="wAmount" type="number" step="0.01" placeholder="0.00" />
+        <button type="submit" class="alt">Withdraw</button>
+        <div class="msg" id="wMsg" role="status"></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>History</h2>
+      <ul id="history"><li>No transactions yet</li></ul>
     </section>
   </main>
+
+  <script>
+    let balance = 500; // pretend money only!
+    const transactions = [];
+
+    const balanceEl = document.getElementById('balance');
+    const historyEl = document.getElementById('history');
+
+    function money(n) { return '$' + n.toFixed(2); }
+
+    function render() {
+      balanceEl.textContent = money(balance);
+      if (transactions.length === 0) {
+        historyEl.innerHTML = '<li>No transactions yet</li>';
+        return;
+      }
+      historyEl.innerHTML = '';
+      transactions.forEach(t => {
+        const li = document.createElement('li');
+        const label = document.createElement('span');
+        label.textContent = t.label; // textContent keeps names safe
+        const amt = document.createElement('span');
+        amt.className = 'out';
+        amt.textContent = '-' + money(t.amount);
+        li.append(label, amt);
+        historyEl.appendChild(li);
+      });
+    }
+
+    // Returns an error message, or '' if the amount is fine
+    function checkAmount(amount) {
+      if (isNaN(amount) || amount <= 0) return 'Enter an amount bigger than $0.';
+      if (amount > balance) return 'Not enough money in your account.';
+      return '';
+    }
+
+    function show(el, text, ok) {
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+    }
+
+    document.getElementById('payForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = document.getElementById('payMsg');
+      const payee = document.getElementById('payee').value.trim();
+      const amount = parseFloat(document.getElementById('payAmount').value);
+
+      if (!payee) return show(msg, 'Type who you are paying.', false);
+      const problem = checkAmount(amount);
+      if (problem) return show(msg, problem, false);
+
+      balance -= amount;
+      transactions.unshift({ label: 'Paid ' + payee, amount });
+      show(msg, 'Paid ' + money(amount) + ' to ' + payee + '!', true);
+      e.target.reset();
+      render();
+    });
+
+    document.getElementById('withdrawForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = document.getElementById('wMsg');
+      const amount = parseFloat(document.getElementById('wAmount').value);
+
+      const problem = checkAmount(amount);
+      if (problem) return show(msg, problem, false);
+
+      balance -= amount;
+      transactions.unshift({ label: 'Cash withdrawal', amount });
+      show(msg, 'Withdrew ' + money(amount) + '.', true);
+      e.target.reset();
+      render();
+    });
+
+    render();
+  </script>
 </body>
 </html>
