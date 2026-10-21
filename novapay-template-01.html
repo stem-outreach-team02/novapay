@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NovaPay — My Money Hub</title>
   <style>
-    /* ---------- THEMES (10 options, with more mature styles for ages 12-18) ---------- */
+    /* ---------- THEMES ---------- */
     :root, [data-theme="galaxy"] {
       --bg1:#ffffff; --bg2:#e9e6ff; --card:#ffffff; --ink:#2b2370; --text:#3d3a5c; --muted:#5f5c80;
       --border:#cfc9ff; --accent:#5a50e0; --accent2:#2b2370; --on-accent:#ffffff; --tint:#eeedfb;
@@ -26,8 +26,6 @@
       --border:#ffb3d3; --accent:#d6297a; --accent2:#8a1250; --on-accent:#ffffff; --tint:#ffe3f0;
       --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(138,18,80,.16);
     }
-
-    /* more mature / teen-focused themes */
     [data-theme="sunset"] {
       --bg1:#15151d; --bg2:#2f1c3f; --card:#1f1f2a; --ink:#f7f7ff; --text:#d5d2e6; --muted:#aaa4c3;
       --border:#4c3a66; --accent:#ff7a59; --accent2:#5f6aff; --on-accent:#ffffff; --tint:#2b243f;
@@ -76,8 +74,6 @@
     [data-theme="candy"] .scene {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Crect width='1200' height='800' fill='%23ffc9e1'/%3E%3Cg font-size='64'%3E%3Ctext x='60' y='300'%3E%F0%9F%8D%AD%3C/text%3E%3Ctext x='560' y='200'%3E%F0%9F%A7%81%3C/text%3E%3C/g%3E%3C/svg%3E");
     }
-
-    /* teen-oriented scene art: cleaner, less emoji-heavy */
     [data-theme="sunset"] .scene {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232f1c3f'/%3E%3Cstop offset='1' stop-color='%2315151d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23g)'/%3E%3Ccircle cx='630' cy='520' r='150' fill='%23ff7a59' opacity='.35'/%3E%3Cpath d='M0 640 Q220 560 460 640 T940 620 T1200 640 V800 H0Z' fill='%23261f37'/%3E%3Cpath d='M0 730 Q300 680 600 730 T1200 710 V800 H0Z' fill='%23151022'/%3E%3C/svg%3E");
     }
@@ -98,6 +94,7 @@
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     body {
       margin: 0; padding: 24px 14px 56px; color: var(--text); line-height: 1.55; font-size: 1.05rem;
       font-family: 'Trebuchet MS', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -109,9 +106,10 @@
       background: var(--card); border: 3px solid var(--border);
       border-radius: 22px; box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
     }
-    h1, h2 { margin: 0 0 8px; color: var(--ink); }
+    h1, h2, h3 { margin: 0 0 8px; color: var(--ink); }
     h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
     h2 { font-size: 1.35rem; }
+    h3 { font-size: 1.1rem; }
     .eyebrow {
       display: inline-block; background: var(--accent); color: var(--on-accent);
       padding: 4px 14px; border-radius: 999px; font-weight: 800; font-size: .85rem; letter-spacing: .06em; margin-bottom: 8px;
@@ -121,10 +119,16 @@
     .balance { font-size: clamp(2.4rem, 9vw, 3.3rem); font-weight: 900; color: var(--ink); margin: 2px 0 0; }
     .coin { display: inline-block; animation: bob 2.4s ease-in-out infinite; }
     @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    @media (prefers-reduced-motion: reduce) { .coin { animation: none; } body { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .coin { animation: none; } body { transition: none; } .bar-fill { transition: none !important; } }
 
     .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-width: 320px; }
     .rate-note { margin-top: 6px; font-size: .9rem; color: var(--muted); min-height: 1.2em; }
+
+    /* mode switch */
+    .mode-switch { display: flex; gap: 8px; margin-bottom: 14px; background: var(--tint); padding: 6px; border-radius: 18px; border: 3px solid var(--border); }
+    .mode-switch button { margin: 0; flex: 1; padding: 11px; font-size: 1rem; background: transparent; color: var(--ink); box-shadow: none; border-radius: 13px; }
+    .mode-switch button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+    .mode-switch button:active { transform: none; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .grid .card { margin-bottom: 0; }
@@ -144,6 +148,9 @@
     button:hover { filter: brightness(1.08); }
     button:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
     button.alt { background: var(--accent2); }
+    button.small { width: auto; margin: 0; padding: 8px 12px; font-size: .9rem; box-shadow: none; border-radius: 12px; }
+    button.danger { background: var(--bad); color: #fff; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .msg { min-height: 1.5em; margin-top: 10px; font-weight: 800; }
     .msg.ok { color: var(--good); }
@@ -155,11 +162,44 @@
       padding: 12px 14px; background: var(--tint); border-radius: 16px; margin-bottom: 10px; gap: 12px;
       color: var(--text); font-weight: 700;
     }
-    .txn-main { display: flex; flex-direction: column; }
+    .txn-main { display: flex; flex-direction: column; min-width: 0; }
     .txn-sub { font-size: .85rem; color: var(--muted); font-weight: 600; }
     .out { color: var(--bad); font-weight: 900; white-space: nowrap; }
+    .in { color: var(--good); font-weight: 900; white-space: nowrap; }
 
     .tip { background: var(--card); border: 3px solid var(--border); border-radius: 16px; padding: 12px 14px; font-weight: 700; color: var(--text); }
+
+    /* XP + level */
+    .level-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .level-badge {
+      min-width: 76px; height: 76px; border-radius: 50%; background: var(--accent); color: var(--on-accent);
+      display: grid; place-items: center; text-align: center; font-weight: 900; line-height: 1.05; padding: 6px;
+      border: 4px solid var(--border);
+    }
+    .level-badge small { display: block; font-size: .7rem; letter-spacing: .08em; }
+    .level-badge span { font-size: 1.7rem; }
+    .level-info { flex: 1; min-width: 200px; }
+    .bar { height: 18px; background: var(--tint); border: 2px solid var(--border); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+    .bar-fill { height: 100%; width: 0; background: var(--accent); transition: width .5s; }
+    .bar.thin { height: 12px; }
+
+    /* goals + rewards */
+    .goal { display: block; }
+    .goal-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+    .goal-meta { font-size: .88rem; color: var(--muted); font-weight: 600; }
+    .goal.done { opacity: .75; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: .78rem; font-weight: 800; }
+    .giftcard {
+      border: 3px dashed var(--accent); border-radius: 16px; background: var(--card); padding: 10px 14px;
+    }
+    .code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; font-weight: 800; color: var(--ink); }
+    .toast {
+      position: sticky; top: 8px; z-index: 5; background: var(--accent); color: var(--on-accent);
+      border-radius: 16px; padding: 12px 16px; font-weight: 900; margin-bottom: 14px; box-shadow: var(--shadow);
+    }
+    .pin-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .pin-row > div { flex: 1; min-width: 160px; }
+    .pin-row button { width: auto; margin: 0; }
 
     @media (max-width: 780px) {
       .grid { grid-template-columns: 1fr; }
@@ -174,8 +214,8 @@
       <div class="eyebrow">NovaPay</div>
       <div class="top-row">
         <div>
-          <h1>My Money Hub</h1>
-          <div class="balance-label">You have</div>
+          <h1 id="pageTitle">My Money Hub</h1>
+          <div class="balance-label" id="balanceLabel">You have</div>
           <div class="balance"><span class="coin" aria-hidden="true">🪙</span> <span id="balance">£500.00</span></div>
         </div>
         <div class="controls">
@@ -196,35 +236,170 @@
       </div>
     </section>
 
-    <section class="grid grid-wrap">
-      <form class="card" id="payForm">
-        <h2>Send money</h2>
-        <label for="payee">Who are you sending it to?</label>
-        <input id="payee" type="text" placeholder="e.g. Sam" maxlength="30" autocomplete="off" />
-        <label for="payAmount">How much?</label>
-        <input id="payAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
-        <button type="submit">Send</button>
-        <div class="msg" id="payMsg" role="status"></div>
-      </form>
+    <div class="mode-switch" role="group" aria-label="Choose interface">
+      <button type="button" id="kidModeBtn" aria-pressed="true">🧒 Kid view</button>
+      <button type="button" id="adultModeBtn" aria-pressed="false">🧑 Adult view</button>
+    </div>
 
-      <form class="card" id="withdrawForm">
-        <h2>Take out cash</h2>
-        <label for="wAmount">How much?</label>
-        <input id="wAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
-        <button type="submit" class="alt">Withdraw</button>
-        <div class="msg" id="wMsg" role="status"></div>
-      </form>
-    </section>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-    <section class="card">
-      <h2>History</h2>
-      <ul id="history"><li>Nothing yet — make your first move.</li></ul>
-    </section>
+    <!-- ================= KID INTERFACE ================= -->
+    <div id="kidView">
+      <section class="card">
+        <h2>⭐ My level</h2>
+        <div class="level-row">
+          <div class="level-badge"><div><small>LEVEL</small><span id="kidLevel">1</span></div></div>
+          <div class="level-info">
+            <div><strong id="kidLevelName">Rookie Saver</strong> — <span id="kidXp">0 XP</span></div>
+            <div class="bar" role="progressbar" aria-label="XP progress to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="kidXpBar"><div class="bar-fill" id="kidXpFill"></div></div>
+            <div class="goal-meta" id="kidXpNext"></div>
+          </div>
+        </div>
+      </section>
 
-    <p class="tip">Learning mode: this is pretend money for practice.</p>
+      <section class="grid grid-wrap">
+        <form class="card" id="payForm">
+          <h2>Send money</h2>
+          <label for="payee">Who are you sending it to?</label>
+          <input id="payee" type="text" placeholder="e.g. Sam" maxlength="30" autocomplete="off" />
+          <label for="payAmount">How much?</label>
+          <input id="payAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+          <button type="submit">Send</button>
+          <div class="msg" id="payMsg" role="status"></div>
+        </form>
+
+        <form class="card" id="withdrawForm">
+          <h2>Take out cash</h2>
+          <label for="wAmount">How much?</label>
+          <input id="wAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+          <button type="submit" class="alt">Withdraw</button>
+          <div class="msg" id="wMsg" role="status"></div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>🎯 My goals</h2>
+        <ul id="kidGoals"></ul>
+      </section>
+
+      <section class="card">
+        <h2>🎁 My rewards</h2>
+        <ul id="kidRewards"></ul>
+      </section>
+
+      <section class="card">
+        <h2>History</h2>
+        <ul id="history"></ul>
+      </section>
+
+      <p class="tip">Learning mode: this is pretend money and pretend gift cards for practice.</p>
+    </div>
+
+    <!-- ================= ADULT INTERFACE ================= -->
+    <div id="adultView" hidden>
+      <section class="card" id="pinGate">
+        <h2>🔒 Adult area</h2>
+        <p>Enter the adult PIN to set goals and rewards. <span class="goal-meta">(Demo PIN: 1234)</span></p>
+        <div class="pin-row">
+          <div>
+            <label for="pinInput">PIN</label>
+            <input id="pinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off" />
+          </div>
+          <button type="button" id="pinBtn">Unlock</button>
+        </div>
+        <div class="msg" id="pinMsg" role="status"></div>
+      </section>
+
+      <div id="adultContent" hidden>
+        <section class="card">
+          <h2>Child progress</h2>
+          <div class="level-row">
+            <div class="level-badge"><div><small>LEVEL</small><span id="adultLevel">1</span></div></div>
+            <div class="level-info">
+              <div><strong id="adultLevelName">Rookie Saver</strong> — <span id="adultXp">0 XP</span></div>
+              <div class="bar"><div class="bar-fill" id="adultXpFill"></div></div>
+              <div class="goal-meta" id="adultXpNext"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid grid-wrap">
+          <form class="card" id="goalForm">
+            <h2>➕ Set a goal &amp; reward</h2>
+            <label for="goalTitle">Goal name</label>
+            <input id="goalTitle" type="text" maxlength="40" placeholder="e.g. Save for a bike" autocomplete="off" />
+
+            <label for="goalType">Goal type</label>
+            <select id="goalType">
+              <option value="save">Savings goal (balance reaches an amount)</option>
+              <option value="task">Task / chore (adult marks it done)</option>
+            </select>
+
+            <div id="targetWrap">
+              <label for="goalTarget">Target balance</label>
+              <input id="goalTarget" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+            </div>
+
+            <label for="rewardStore">Gift card reward</label>
+            <select id="rewardStore">
+              <option>🎮 Game Store</option>
+              <option>🎵 Music Streaming</option>
+              <option>📚 Book Shop</option>
+              <option>🎬 Cinema</option>
+              <option>🍕 Pizza Treat</option>
+              <option>🛍️ Clothes Shop</option>
+            </select>
+
+            <label for="rewardValue">Gift card value</label>
+            <input id="rewardValue" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+
+            <label for="rewardXp">XP reward</label>
+            <input id="rewardXp" type="number" step="5" min="0" max="500" value="50" inputmode="numeric" />
+
+            <button type="submit">Create goal</button>
+            <div class="msg" id="goalMsg" role="status"></div>
+          </form>
+
+          <div>
+            <form class="card" id="moneyForm" style="margin-bottom:18px">
+              <h2>💷 Give pocket money</h2>
+              <label for="moneyAmount">Amount</label>
+              <input id="moneyAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+              <button type="submit" class="alt">Add to balance</button>
+              <div class="msg" id="moneyMsg" role="status"></div>
+            </form>
+            <section class="card" style="margin-bottom:0">
+              <h2>Reset</h2>
+              <p class="goal-meta">Clears goals, rewards, XP and balance back to the start.</p>
+              <button type="button" class="danger" id="resetBtn">Reset everything</button>
+            </section>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>🎯 Goals you've set</h2>
+          <ul id="adultGoals"></ul>
+        </section>
+
+        <section class="card">
+          <h2>🎁 Rewards earned</h2>
+          <ul id="adultRewards"></ul>
+        </section>
+      </div>
+    </div>
   </main>
 
   <script>
+    /* ---------- HELPERS ---------- */
+    const $ = id => document.getElementById(id);
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text !== undefined) n.textContent = text; // textContent keeps names safe
+      return n;
+    }
+
+    /* ---------- THEMES ---------- */
     const THEMES = [
       { id: 'galaxy',  name: 'Galaxy (fun)' },
       { id: 'ocean',   name: 'Ocean (fun)' },
@@ -237,103 +412,55 @@
       { id: 'robot',   name: 'Steel (teen)' },
       { id: 'rainbow', name: 'Indigo (teen)' }
     ];
-
-    const themeSelectEl = document.getElementById('themeSelect');
-
+    const themeSelectEl = $('themeSelect');
     THEMES.forEach(t => {
-      const opt = document.createElement('option');
+      const opt = el('option', '', t.name);
       opt.value = t.id;
-      opt.textContent = t.name;
       themeSelectEl.appendChild(opt);
     });
-
     function applyTheme(id) {
       if (!THEMES.some(t => t.id === id)) id = 'galaxy';
       document.documentElement.setAttribute('data-theme', id);
       themeSelectEl.value = id;
       try { localStorage.setItem('novapay-theme', id); } catch (e) {}
     }
-
     let savedTheme = 'galaxy';
     try { savedTheme = localStorage.getItem('novapay-theme') || 'galaxy'; } catch (e) {}
     applyTheme(savedTheme);
-
     themeSelectEl.addEventListener('change', e => applyTheme(e.target.value));
 
-    // Canonical account currency is GBP. We convert only for display/input.
-    let balanceGBP = 500;
-    const transactions = [];
+    /* ---------- STATE (all money stored in GBP) ---------- */
+    const STORAGE_KEY = 'novapay-state-v1';
+    const ADULT_PIN = '1234'; // demo only — not real security
+    const XP_PER_LEVEL = 100;
+    const LEVEL_NAMES = ['Rookie Saver', 'Coin Collector', 'Smart Spender', 'Budget Hero', 'Money Wizard',
+                         'Savings Star', 'Finance Ninja', 'Wealth Legend'];
 
-    const currencyEl = document.getElementById('currency');
-    const balanceEl = document.getElementById('balance');
-    const historyEl = document.getElementById('history');
-    const rateNoteEl = document.getElementById('rateNote');
+    const defaultState = () => ({ balanceGBP: 500, transactions: [], goals: [], rewards: [], xp: 0, nextId: 1 });
+    let state = defaultState();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) state = Object.assign(defaultState(), JSON.parse(raw));
+    } catch (e) {}
+    function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
 
-    let rates = { GBP: 1, EUR: 1.17, USD: 1.31 };
+    /* ---------- CURRENCY ---------- */
+    const currencyEl = $('currency');
+    const rateNoteEl = $('rateNote');
+    let rates = { GBP: 1, EUR: 1.17, USD: 1.31 }; // fallback rates
     let usingLiveRates = false;
-
     const symbols = { GBP: '£', EUR: '€', USD: '$' };
 
-    function currentCurrency() { return currencyEl.value; }
-    function toDisplayAmount(gbp, cur) { return gbp * rates[cur]; }
-    function toGBP(amount, cur) { return amount / rates[cur]; }
-    function money(amount, cur = currentCurrency()) { return symbols[cur] + amount.toFixed(2); }
+    const currentCurrency = () => currencyEl.value;
+    const toDisplayAmount = (gbp, cur) => gbp * rates[cur];
+    const toGBP = (amount, cur) => amount / rates[cur];
+    const money = (amount, cur = currentCurrency()) => symbols[cur] + amount.toFixed(2);
+    const moneyFromGBP = gbp => money(toDisplayAmount(gbp, currentCurrency()));
 
     function renderRateNote() {
-      if (usingLiveRates) {
-        rateNoteEl.textContent = `Today's rates: £1 = €${rates.EUR.toFixed(4)} = $${rates.USD.toFixed(4)}`;
-      } else {
-        rateNoteEl.textContent = "Can't reach internet; using backup rates.";
-      }
-    }
-
-    function render() {
-      const cur = currentCurrency();
-      balanceEl.textContent = money(toDisplayAmount(balanceGBP, cur), cur);
-
-      if (transactions.length === 0) {
-        historyEl.innerHTML = '<li>Nothing yet — make your first move.</li>';
-        return;
-      }
-
-      historyEl.innerHTML = '';
-      transactions.forEach(t => {
-        const li = document.createElement('li');
-        const left = document.createElement('div');
-        left.className = 'txn-main';
-
-        const title = document.createElement('span');
-        title.textContent = t.label;
-
-        const sub = document.createElement('span');
-        sub.className = 'txn-sub';
-        sub.textContent = 'Stored as ' + money(t.amountGBP, 'GBP');
-
-        left.append(title, sub);
-
-        const amt = document.createElement('span');
-        amt.className = 'out';
-        amt.textContent = '-' + money(toDisplayAmount(t.amountGBP, cur), cur);
-
-        li.append(left, amt);
-        historyEl.appendChild(li);
-      });
-    }
-
-    function show(el, text, ok) {
-      el.textContent = text;
-      el.className = 'msg ' + (ok ? 'ok' : 'err');
-    }
-
-    function checkAmountInSelectedCurrency(amountSelected) {
-      const cur = currentCurrency();
-      if (isNaN(amountSelected) || amountSelected <= 0) {
-        return `Type an amount bigger than ${money(0, cur)}.`;
-      }
-      if (toGBP(amountSelected, cur) > balanceGBP + 1e-9) {
-        return `You only have ${money(toDisplayAmount(balanceGBP, cur), cur)}.`;
-      }
-      return '';
+      rateNoteEl.textContent = usingLiveRates
+        ? `Today's rates: £1 = €${rates.EUR.toFixed(4)} = $${rates.USD.toFixed(4)}`
+        : "Can't reach internet; using backup rates.";
     }
 
     async function fetchLiveRates() {
@@ -341,9 +468,7 @@
         const res = await fetch('https://api.frankfurter.app/latest?from=GBP&to=EUR,USD');
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
-        if (!data || !data.rates || !data.rates.EUR || !data.rates.USD) {
-          throw new Error('Unexpected rates payload');
-        }
+        if (!data || !data.rates || !data.rates.EUR || !data.rates.USD) throw new Error('Unexpected rates payload');
         rates = { GBP: 1, EUR: Number(data.rates.EUR), USD: Number(data.rates.USD) };
         usingLiveRates = true;
       } catch (err) {
@@ -351,49 +476,332 @@
         console.warn('Using fallback rates:', err);
       }
       renderRateNote();
-      render();
+      renderAll();
     }
 
-    document.getElementById('payForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const msg = document.getElementById('payMsg');
-      const payee = document.getElementById('payee').value.trim();
-      const amountSelected = parseFloat(document.getElementById('payAmount').value);
-      const cur = currentCurrency();
+    /* ---------- XP + LEVELS ---------- */
+    function levelInfo(xp) {
+      const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+      const into = xp % XP_PER_LEVEL;
+      return {
+        level,
+        name: LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)],
+        into,
+        pct: (into / XP_PER_LEVEL) * 100,
+        toNext: XP_PER_LEVEL - into
+      };
+    }
 
+    let toastTimer = null;
+    function toast(text) {
+      const t = $('toast');
+      t.textContent = text;
+      t.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
+    }
+
+    function makeCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let out = '';
+      for (let i = 0; i < 12; i++) {
+        if (i > 0 && i % 4 === 0) out += '-';
+        out += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return out;
+    }
+
+    /* ---------- GOALS ---------- */
+    function completeGoal(goal) {
+      if (goal.done) return;
+      const before = levelInfo(state.xp).level;
+      goal.done = true;
+      goal.doneAt = new Date().toISOString();
+      state.xp += goal.xp;
+      if (goal.rewardGBP > 0) {
+        state.rewards.unshift({
+          id: state.nextId++, store: goal.store, valueGBP: goal.rewardGBP,
+          code: makeCode(), goalTitle: goal.title, at: goal.doneAt
+        });
+      }
+      const after = levelInfo(state.xp).level;
+      let text = `🎉 Goal complete: "${goal.title}"! +${goal.xp} XP`;
+      if (goal.rewardGBP > 0) text += ` and a ${goal.store} gift card (${moneyFromGBP(goal.rewardGBP)})!`;
+      if (after > before) text += ` ⭐ LEVEL UP — you're now level ${after}!`;
+      toast(text);
+    }
+
+    function checkGoals() {
+      state.goals.forEach(g => {
+        if (!g.done && g.type === 'save' && state.balanceGBP + 1e-9 >= g.targetGBP) completeGoal(g);
+      });
+    }
+
+    function goalProgress(g) {
+      if (g.done) return 100;
+      if (g.type === 'save') return Math.max(0, Math.min(100, (state.balanceGBP / g.targetGBP) * 100));
+      return 0;
+    }
+
+    function rewardText(g) {
+      const parts = [];
+      if (g.rewardGBP > 0) parts.push(`${g.store} gift card ${moneyFromGBP(g.rewardGBP)}`);
+      parts.push(`${g.xp} XP`);
+      return 'Reward: ' + parts.join(' + ');
+    }
+
+    function goalItem(g, adult) {
+      const li = el('li', 'goal' + (g.done ? ' done' : ''));
+      const wrap = el('div', '');
+      wrap.style.width = '100%';
+
+      const head = el('div', 'goal-head');
+      const left = el('div', 'txn-main');
+      left.append(el('span', '', (g.done ? '✅ ' : (g.type === 'save' ? '💰 ' : '🧹 ')) + g.title));
+      const sub = g.type === 'save'
+        ? `Save up to ${moneyFromGBP(g.targetGBP)} · ${rewardText(g)}`
+        : `Task · ${rewardText(g)}`;
+      left.append(el('span', 'goal-meta', sub));
+      head.append(left);
+
+      const right = el('div', 'actions');
+      if (g.done) {
+        right.append(el('span', 'badge', 'Done'));
+      } else if (adult && g.type === 'task') {
+        const b = el('button', 'small', 'Mark done');
+        b.type = 'button';
+        b.addEventListener('click', () => { completeGoal(g); save(); renderAll(); });
+        right.append(b);
+      } else if (!adult && g.type === 'task') {
+        right.append(el('span', 'badge', 'Ask an adult'));
+      }
+      if (adult) {
+        const d = el('button', 'small danger', 'Delete');
+        d.type = 'button';
+        d.setAttribute('aria-label', 'Delete goal ' + g.title);
+        d.addEventListener('click', () => {
+          state.goals = state.goals.filter(x => x.id !== g.id);
+          save(); renderAll();
+        });
+        right.append(d);
+      }
+      head.append(right);
+      wrap.append(head);
+
+      if (g.type === 'save') {
+        const pct = goalProgress(g);
+        const bar = el('div', 'bar thin');
+        bar.setAttribute('role', 'progressbar');
+        bar.setAttribute('aria-valuemin', '0');
+        bar.setAttribute('aria-valuemax', '100');
+        bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+        bar.setAttribute('aria-label', 'Progress for ' + g.title);
+        const fill = el('div', 'bar-fill');
+        fill.style.width = pct + '%';
+        bar.append(fill);
+        wrap.append(bar);
+      }
+      li.append(wrap);
+      return li;
+    }
+
+    function rewardItem(r) {
+      const li = el('li', '');
+      const box = el('div', 'giftcard');
+      box.style.width = '100%';
+      box.append(el('div', '', `🎁 ${r.store} gift card — ${moneyFromGBP(r.valueGBP)}`));
+      const code = el('div', '', 'Code: ');
+      code.append(el('span', 'code', r.code));
+      box.append(code);
+      box.append(el('div', 'goal-meta', `Earned for: ${r.goalTitle} (pretend gift card)`));
+      li.append(box);
+      return li;
+    }
+
+    /* ---------- RENDER ---------- */
+    function renderLevel(prefix) {
+      const info = levelInfo(state.xp);
+      $(prefix + 'Level').textContent = info.level;
+      $(prefix + 'LevelName').textContent = info.name;
+      $(prefix + 'Xp').textContent = state.xp + ' XP';
+      $(prefix + 'XpFill').style.width = info.pct + '%';
+      $(prefix + 'XpNext').textContent = `${info.toNext} XP to level ${info.level + 1}`;
+      if (prefix === 'kid') $('kidXpBar').setAttribute('aria-valuenow', String(Math.round(info.pct)));
+    }
+
+    function renderList(ul, items, emptyText, build) {
+      ul.innerHTML = '';
+      if (items.length === 0) { ul.append(el('li', '', emptyText)); return; }
+      items.forEach(i => ul.append(build(i)));
+    }
+
+    function renderAll() {
+      const cur = currentCurrency();
+      $('balance').textContent = money(toDisplayAmount(state.balanceGBP, cur), cur);
+
+      renderLevel('kid');
+      renderLevel('adult');
+
+      renderList($('history'), state.transactions, 'Nothing yet — make your first move.', t => {
+        const li = el('li', '');
+        const left = el('div', 'txn-main');
+        left.append(el('span', '', t.label));
+        left.append(el('span', 'txn-sub', 'Stored as ' + money(Math.abs(t.amountGBP), 'GBP')));
+        li.append(left);
+        const incoming = t.amountGBP > 0;
+        li.append(el('span', incoming ? 'in' : 'out',
+          (incoming ? '+' : '-') + money(toDisplayAmount(Math.abs(t.amountGBP), cur), cur)));
+        return li;
+      });
+
+      renderList($('kidGoals'), state.goals, 'No goals yet — ask an adult to set one for you! 🎯', g => goalItem(g, false));
+      renderList($('kidRewards'), state.rewards, 'Complete a goal to win your first reward! 🎁', rewardItem);
+      renderList($('adultGoals'), state.goals, 'No goals yet. Create one above.', g => goalItem(g, true));
+      renderList($('adultRewards'), state.rewards, 'No rewards earned yet.', rewardItem);
+    }
+
+    function show(elm, text, ok) {
+      elm.textContent = text;
+      elm.className = 'msg ' + (ok ? 'ok' : 'err');
+    }
+
+    /* ---------- KID ACTIONS ---------- */
+    function checkAmountInSelectedCurrency(amountSelected) {
+      const cur = currentCurrency();
+      if (isNaN(amountSelected) || amountSelected <= 0) return `Type an amount bigger than ${money(0, cur)}.`;
+      if (toGBP(amountSelected, cur) > state.balanceGBP + 1e-9) return `You only have ${moneyFromGBP(state.balanceGBP)}.`;
+      return '';
+    }
+
+    $('payForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = $('payMsg');
+      const payee = $('payee').value.trim();
+      const amountSelected = parseFloat($('payAmount').value);
+      const cur = currentCurrency();
       if (!payee) return show(msg, 'Type who you are sending money to.', false);
       const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
-
       const amountGBP = toGBP(amountSelected, cur);
-      balanceGBP = Math.max(0, balanceGBP - amountGBP);
-      transactions.unshift({ label: 'Sent to ' + payee, amountGBP });
+      state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
+      state.transactions.unshift({ label: 'Sent to ' + payee, amountGBP: -amountGBP });
       show(msg, `Sent ${money(amountSelected, cur)} to ${payee}.`, true);
       e.target.reset();
-      render();
+      checkGoals(); save(); renderAll();
     });
 
-    document.getElementById('withdrawForm').addEventListener('submit', e => {
+    $('withdrawForm').addEventListener('submit', e => {
       e.preventDefault();
-      const msg = document.getElementById('wMsg');
-      const amountSelected = parseFloat(document.getElementById('wAmount').value);
+      const msg = $('wMsg');
+      const amountSelected = parseFloat($('wAmount').value);
       const cur = currentCurrency();
-
       const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
-
       const amountGBP = toGBP(amountSelected, cur);
-      balanceGBP = Math.max(0, balanceGBP - amountGBP);
-      transactions.unshift({ label: 'Cash withdrawal', amountGBP });
+      state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
+      state.transactions.unshift({ label: 'Cash withdrawal', amountGBP: -amountGBP });
       show(msg, `Withdrew ${money(amountSelected, cur)}.`, true);
       e.target.reset();
-      render();
+      checkGoals(); save(); renderAll();
     });
 
-    currencyEl.addEventListener('change', render);
+    /* ---------- ADULT ACTIONS ---------- */
+    $('goalType').addEventListener('change', () => {
+      $('targetWrap').hidden = $('goalType').value !== 'save';
+    });
 
+    $('goalForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = $('goalMsg');
+      const cur = currentCurrency();
+      const title = $('goalTitle').value.trim();
+      const type = $('goalType').value;
+      const target = parseFloat($('goalTarget').value);
+      const rewardValue = parseFloat($('rewardValue').value) || 0;
+      const xp = Math.max(0, Math.min(500, parseInt($('rewardXp').value, 10) || 0));
+
+      if (!title) return show(msg, 'Give the goal a name.', false);
+      if (type === 'save' && (isNaN(target) || target <= 0)) return show(msg, 'Enter a target balance bigger than 0.', false);
+      if (rewardValue < 0) return show(msg, 'Gift card value can’t be negative.', false);
+      if (rewardValue === 0 && xp === 0) return show(msg, 'Add a gift card value or some XP as the reward.', false);
+
+      state.goals.unshift({
+        id: state.nextId++, title, type,
+        targetGBP: type === 'save' ? toGBP(target, cur) : 0,
+        store: $('rewardStore').value,
+        rewardGBP: toGBP(rewardValue, cur),
+        xp, done: false
+      });
+      show(msg, `Goal "${title}" created!`, true);
+      e.target.reset();
+      $('rewardXp').value = 50;
+      $('targetWrap').hidden = false;
+      checkGoals(); save(); renderAll();
+    });
+
+    $('moneyForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = $('moneyMsg');
+      const cur = currentCurrency();
+      const amount = parseFloat($('moneyAmount').value);
+      if (isNaN(amount) || amount <= 0) return show(msg, `Enter an amount bigger than ${money(0, cur)}.`, false);
+      const gbp = toGBP(amount, cur);
+      state.balanceGBP += gbp;
+      state.transactions.unshift({ label: 'Pocket money', amountGBP: gbp });
+      show(msg, `Added ${money(amount, cur)}.`, true);
+      e.target.reset();
+      checkGoals(); save(); renderAll();
+    });
+
+    $('resetBtn').addEventListener('click', () => {
+      if (!confirm('Reset balance, goals, rewards and XP?')) return;
+      state = defaultState();
+      save(); renderAll();
+      toast('Everything has been reset.');
+    });
+
+    /* ---------- MODE SWITCH + PIN ---------- */
+    let adultUnlocked = false;
+
+    function setMode(mode) {
+      const adult = mode === 'adult';
+      $('kidView').hidden = adult;
+      $('adultView').hidden = !adult;
+      $('kidModeBtn').setAttribute('aria-pressed', String(!adult));
+      $('adultModeBtn').setAttribute('aria-pressed', String(adult));
+      $('pageTitle').textContent = adult ? 'Adult Dashboard' : 'My Money Hub';
+      $('balanceLabel').textContent = adult ? 'Child balance' : 'You have';
+      $('pinGate').hidden = adultUnlocked;
+      $('adultContent').hidden = !adultUnlocked;
+      if (!adult) { adultUnlocked = false; } // lock again when going back to kid view
+      try { sessionStorage.setItem('novapay-mode', mode); } catch (e) {}
+    }
+
+    $('kidModeBtn').addEventListener('click', () => setMode('kid'));
+    $('adultModeBtn').addEventListener('click', () => { adultUnlocked = false; setMode('adult'); });
+
+    function tryUnlock() {
+      if ($('pinInput').value === ADULT_PIN) {
+        adultUnlocked = true;
+        $('pinInput').value = '';
+        show($('pinMsg'), '', true);
+        $('pinGate').hidden = true;
+        $('adultContent').hidden = false;
+      } else {
+        show($('pinMsg'), 'Wrong PIN. Try again.', false);
+      }
+    }
+    $('pinBtn').addEventListener('click', tryUnlock);
+    $('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+    currencyEl.addEventListener('change', renderAll);
+
+    /* ---------- START ---------- */
     renderRateNote();
-    render();
+    checkGoals();
+    save();
+    renderAll();
+    setMode('kid');
     fetchLiveRates();
   </script>
 </body>
