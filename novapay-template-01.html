@@ -197,6 +197,13 @@
       position: sticky; top: 8px; z-index: 5; background: var(--accent); color: var(--on-accent);
       border-radius: 16px; padding: 12px 16px; font-weight: 900; margin-bottom: 14px; box-shadow: var(--shadow);
     }
+    .tts-controls { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+    .tts-controls button { width: auto; margin: 0; }
+    .tts-controls select { width: auto; }
+    .tts-controls button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+    .tts-controls button:disabled, .tts-controls select:disabled { opacity: .6; cursor: not-allowed; }
+    .tts-note { flex-basis: 100%; font-size: .85rem; color: var(--muted); font-weight: 600; }
+    [tabindex="0"]:focus-visible { outline: 4px solid var(--accent2); outline-offset: 2px; }
     .pin-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
     .pin-row > div { flex: 1; min-width: 160px; }
     .pin-row button { width: auto; margin: 0; }
@@ -296,6 +303,19 @@
           <div>
             <label for="themeSelect">Theme style</label>
             <select id="themeSelect" aria-label="Choose theme style"></select>
+          </div>
+          <div class="tts-controls" role="group" aria-label="Read aloud settings">
+            <button type="button" id="ttsToggle" aria-pressed="false">🔊 Read aloud</button>
+            <div>
+              <label for="ttsRate">Speech speed</label>
+              <select id="ttsRate">
+                <option value="0.75">Slow</option>
+                <option value="1" selected>Normal</option>
+                <option value="1.3">Fast</option>
+              </select>
+            </div>
+            <button type="button" id="ttsTest">Test voice</button>
+            <div class="tts-note" id="ttsNote"></div>
           </div>
         </div>
       </div>
@@ -636,6 +656,7 @@
       const t = $('toast');
       t.textContent = text;
       t.hidden = false;
+      if (window.ttsSpeak) window.ttsSpeak(text);
       requestAnimationFrame(() => t.classList.add('toast-visible'));
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => {
@@ -717,6 +738,7 @@
 
     function goalItem(g, adult) {
       const li = el('li', 'goal' + (g.done ? ' done' : ''));
+      li.tabIndex = 0;
       const wrap = el('div', '');
       wrap.style.width = '100%';
 
@@ -772,6 +794,7 @@
 
     function rewardItem(r) {
       const li = el('li', '');
+      li.tabIndex = 0;
       const box = el('div', 'giftcard');
       box.style.width = '100%';
       box.append(el('div', '', `🎁 ${r.store} gift card — ${moneyFromGBP(r.valueGBP)}`));
@@ -1207,6 +1230,130 @@
     $('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
     currencyEl.addEventListener('change', renderAll);
+
+    /* ---------- READ ALOUD (text-to-speech on focus) ---------- */
+    (function () {
+      const toggle = $('ttsToggle'), rateSel = $('ttsRate'), testBtn = $('ttsTest'), note = $('ttsNote');
+      const supported = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
+      let enabled = false, timer = null;
+
+      document.querySelectorAll('.stat-card').forEach(c => { c.tabIndex = 0; });
+
+      function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+      function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+      function speak(text) {
+        if (!enabled || !supported || !text) return;
+        try {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = parseFloat(rateSel.value) || 1;
+          window.speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+      window.ttsSpeak = speak;
+
+      function labelOf(n) {
+        const al = n.getAttribute('aria-label');
+        if (al) return al.trim();
+        const by = n.getAttribute('aria-labelledby');
+        if (by) {
+          const t = by.split(/\s+/).map(id => { const x = $(id); return x ? x.textContent.trim() : ''; }).filter(Boolean).join(' ');
+          if (t) return t;
+        }
+        if (n.labels && n.labels.length) return n.labels[0].textContent.trim();
+        return (n.getAttribute('placeholder') || n.getAttribute('title') || '').trim();
+      }
+
+      function clean(t) { return (t || '').replace(/\s+/g, ' ').trim(); }
+
+      function describe(n) {
+        if (!n || n === document.body) return '';
+        const tag = n.tagName;
+        const type = (n.getAttribute('type') || '').toLowerCase();
+        if (n.id === 'pinInput' || type === 'password') return 'PIN field, hidden';
+        if (tag === 'SELECT') {
+          const opt = n.options[n.selectedIndex];
+          return `${labelOf(n) || 'Menu'}, dropdown, ${opt ? clean(opt.textContent) : 'nothing selected'}`;
+        }
+        if (tag === 'TEXTAREA' || (tag === 'INPUT' && type !== 'checkbox' && type !== 'radio' && type !== 'button' && type !== 'submit')) {
+          const kind = type === 'number' ? 'number input' : 'text input';
+          return `${labelOf(n) || 'Field'}, ${kind}, ${n.value ? n.value : 'empty'}`;
+        }
+        if (tag === 'INPUT' && (type === 'checkbox' || type === 'radio')) {
+          return `${labelOf(n) || 'Option'}, ${type}, ${n.checked ? 'checked' : 'not checked'}`;
+        }
+        if (tag === 'BUTTON' || tag === 'INPUT' || n.getAttribute('role') === 'button') {
+          const name = labelOf(n) || clean(n.textContent);
+          let out = `${name}, button`;
+          if (n.getAttribute('aria-pressed') === 'true') out += ', pressed';
+          else if (n.getAttribute('aria-pressed') === 'false') out += ', not pressed';
+          if (n.getAttribute('aria-expanded') === 'true') out += ', expanded';
+          else if (n.getAttribute('aria-expanded') === 'false') out += ', collapsed';
+          if (n.disabled) out += ', unavailable';
+          return out;
+        }
+        if (n.getAttribute('role') === 'progressbar') {
+          return `${labelOf(n) || 'Progress'}, ${n.getAttribute('aria-valuenow') || 0} percent`;
+        }
+        if (n.classList.contains('stat-card')) {
+          const parts = [...n.children].map(c => clean(c.textContent));
+          return parts.length > 1 ? `${parts[0]}, ${parts.slice(1).join(' ')}` : parts.join(' ');
+        }
+        const bar = n.querySelector && n.querySelector('[role="progressbar"]');
+        let text = clean(n.textContent);
+        if (n.tagName === 'LI' && n.querySelector('.code')) {
+          const code = n.querySelector('.code');
+          if (code.hidden) text = clean(text.replace(code.textContent, ''));
+        }
+        if (bar) text += `, ${bar.getAttribute('aria-valuenow') || 0} percent complete`;
+        return text || labelOf(n);
+      }
+
+      function readFocused() { speak(describe(document.activeElement)); }
+
+      function setEnabled(on, confirm) {
+        enabled = !!on;
+        toggle.setAttribute('aria-pressed', String(enabled));
+        store('novapay-tts', enabled ? '1' : '0');
+        if (confirm) {
+          if (enabled) speak('Read aloud on');
+          else if (supported) window.speechSynthesis.cancel();
+        }
+      }
+
+      if (!supported) {
+        toggle.disabled = true; rateSel.disabled = true; testBtn.disabled = true;
+        note.textContent = 'Read aloud is not supported in this browser.';
+        return;
+      }
+
+      note.textContent = 'Tip: Alt+R re-reads the focused item, Esc stops speaking.';
+      if (load('novapay-tts') === '1') setEnabled(true, false);
+      const savedRate = load('novapay-tts-rate');
+      if (savedRate && [...rateSel.options].some(o => o.value === savedRate)) rateSel.value = savedRate;
+
+      toggle.addEventListener('click', () => setEnabled(!enabled, true));
+      rateSel.addEventListener('change', () => store('novapay-tts-rate', rateSel.value));
+      testBtn.addEventListener('click', () => {
+        const was = enabled; enabled = true;
+        speak('Hello! This is how I sound.');
+        enabled = was;
+      });
+
+      document.addEventListener('focusin', e => {
+        if (!enabled) return;
+        if (e.target === toggle) return;
+        clearTimeout(timer);
+        const target = e.target;
+        timer = setTimeout(() => speak(describe(target)), 120);
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { clearTimeout(timer); window.speechSynthesis.cancel(); }
+        else if (e.altKey && (e.key === 'r' || e.key === 'R')) { e.preventDefault(); readFocused(); }
+      });
+    })();
 
     /* ---------- START ---------- */
     renderRateNote();
