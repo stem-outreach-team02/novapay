@@ -234,7 +234,7 @@
     .card { animation: card-in .45s ease both; }
     .view-enter .card { animation: card-in .45s ease both; }
     li.list-enter { animation: list-in .38s ease both; }
-    .giftcard { perspective: 700px; animation: gift-shimmer 2.4s ease-in-out infinite; }
+    .giftcard { perspective: 700px; }
     .giftcard.revealed { animation: gift-flip .55s ease both, gift-shimmer 2.4s ease-in-out .55s infinite; }
     button { position: relative; overflow: hidden; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
     button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(0,0,0,.2); }
@@ -793,7 +793,7 @@
           box.classList.remove('revealed');
           void box.offsetWidth;
           box.classList.add('revealed');
-        }
+        } else box.classList.remove('revealed');
       });
       box.append(reveal);
       li.append(box);
