@@ -420,6 +420,14 @@
       </section>
 
       <div id="adultContent" hidden>
+        <section class="card" id="adultAccount">
+          <h2>🧑 <span id="adultAccName">Parent</span>'s account</h2>
+          <p class="goal-meta" id="adultLink">🔗 Linked to: Child</p>
+          <div class="stat-card"><span>Adult balance</span><strong id="adultAccBalance">£0.00</strong></div>
+          <h3>Adult transactions</h3>
+          <ul id="adultHistory"></ul>
+        </section>
+
         <section class="card">
           <h2>Child progress</h2>
           <div class="level-row">
@@ -480,6 +488,7 @@
           <div>
             <form class="card" id="moneyForm" style="margin-bottom:18px">
               <h2>💷 Give pocket money</h2>
+              <p class="goal-meta">Paid from your adult account.</p>
               <label for="moneyAmount">Amount</label>
               <input id="moneyAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
               <div class="chips" aria-label="Weekly pocket money presets">
@@ -563,11 +572,14 @@
     const LEVEL_NAMES = ['Rookie Saver', 'Coin Collector', 'Smart Spender', 'Budget Hero', 'Money Wizard',
                          'Savings Star', 'Finance Ninja', 'Wealth Legend'];
 
-    const defaultState = () => ({ balanceGBP: 500, transactions: [], goals: [], rewards: [], xp: 0, nextId: 1 });
+    const defaultState = () => ({ balanceGBP: 500, transactions: [], goals: [], rewards: [], xp: 0, nextId: 1,
+      adult: { name: 'Parent', balanceGBP: 1000, transactions: [], linkedChildName: 'Child' } });
     let state = defaultState();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) state = Object.assign(defaultState(), JSON.parse(raw));
+      state.adult = Object.assign(defaultState().adult, state.adult);
+      if (!Array.isArray(state.adult.transactions)) state.adult.transactions = [];
     } catch (e) {}
     function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
 
@@ -997,6 +1009,16 @@
       renderList($('kidRewards'), state.rewards, 'Complete a goal to win your first reward! 🎁', rewardItem);
       renderList($('adultGoals'), state.goals, 'No goals yet. Create one above.', g => goalItem(g, true));
       renderList($('adultRewards'), state.rewards, 'No rewards earned yet.', rewardItem);
+      $('adultAccName').textContent = state.adult.name;
+      $('adultLink').textContent = '🔗 Linked to: ' + state.adult.linkedChildName + ' (child account)';
+      $('adultAccBalance').textContent = money(toDisplayAmount(state.adult.balanceGBP, cur), cur);
+      renderList($('adultHistory'), state.adult.transactions, 'No adult transactions yet.', t => {
+        const li = el('li', '');
+        li.append(el('span', '', t.label));
+        li.append(el('span', t.amountGBP > 0 ? 'in' : 'out',
+          (t.amountGBP > 0 ? '+' : '-') + money(toDisplayAmount(Math.abs(t.amountGBP), cur), cur)));
+        return li;
+      });
       renderStats(cur);
       renderSavingsJar();
       renderAchievements();
@@ -1103,8 +1125,13 @@
       const amount = parseFloat($('moneyAmount').value);
       if (isNaN(amount) || amount <= 0) return show(msg, `Enter an amount bigger than ${money(0, cur)}.`, false);
       const gbp = toGBP(amount, cur);
+      if (gbp > state.adult.balanceGBP + 1e-9) return show(msg, 'Not enough in the adult account.', false);
+      const label = pendingPocketMoney ? 'Weekly pocket money' : 'Pocket money';
+      const at = new Date().toISOString();
+      state.adult.balanceGBP -= gbp;
+      state.adult.transactions.unshift({ label: label + ' to ' + state.adult.linkedChildName, amountGBP: -gbp, at });
       state.balanceGBP += gbp;
-      state.transactions.unshift({ label: pendingPocketMoney ? 'Weekly pocket money' : 'Pocket money', amountGBP: gbp, at: new Date().toISOString() });
+      state.transactions.unshift({ label, amountGBP: gbp, at });
       pendingPocketMoney = false;
       show(msg, `Added ${money(amount, cur)}.`, true);
       e.target.reset();
