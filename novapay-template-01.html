@@ -17,47 +17,74 @@
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
       background: radial-gradient(circle at top, #fff 0%, var(--bg) 45%, #edf0f7 100%);
     }
-    .shell { max-width: 900px; margin: 0 auto; }
+    .shell { max-width: 980px; margin: 0 auto; }
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
     }
-    h1, h2 { margin: 0 0 8px; color: var(--ink); }
+    h1, h2, h3 { margin: 0 0 8px; color: var(--ink); }
     .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: .78rem; font-weight: 700; color: var(--accent); }
+    .top-row { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; }
     .balance { font-size: 3rem; font-weight: 800; color: var(--ink); margin: 6px 0 0; }
+    .currency-wrap { min-width: 220px; }
+    .currency-wrap label { margin: 0 0 4px; }
+    .rate-note { margin-top: 6px; font-size: .88rem; color: var(--muted); min-height: 1.2em; }
+
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0; }
     label { display: block; font-weight: 600; margin: 12px 0 4px; color: var(--ink); }
-    input {
+    input, select {
       width: 100%; padding: 10px 12px; font-size: 1rem;
-      border: 1px solid var(--border); border-radius: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: #fff;
     }
-    input:focus { outline: 2px solid var(--accent); }
+    input:focus, select:focus { outline: 2px solid var(--accent); }
+
     button {
       margin-top: 14px; width: 100%; padding: 12px; font-size: 1rem; font-weight: 700;
       color: #fff; background: var(--accent); border: 0; border-radius: 12px; cursor: pointer;
     }
     button:hover { filter: brightness(1.1); }
     button.alt { background: var(--ink); }
+
     .msg { min-height: 1.4em; margin-top: 10px; font-weight: 600; }
     .msg.ok { color: var(--good); }
     .msg.err { color: var(--bad); }
+
     ul { list-style: none; margin: 10px 0 0; padding: 0; }
     li {
-      display: flex; justify-content: space-between; padding: 10px 12px;
-      background: var(--tint); border-radius: 12px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; background: var(--tint); border-radius: 12px; margin-bottom: 8px;
+      gap: 12px;
     }
+    .txn-main { display: flex; flex-direction: column; }
+    .txn-sub { font-size: .83rem; color: var(--muted); }
     .out { color: var(--bad); font-weight: 700; }
-    .in { color: var(--good); font-weight: 700; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .balance { font-size: 2.4rem; }
+    }
   </style>
 </head>
 <body>
   <main class="shell">
     <section class="card">
       <div class="eyebrow">NovaPay</div>
-      <h1>My Account</h1>
-      <div>Available balance</div>
-      <div class="balance" id="balance">$500.00</div>
+      <div class="top-row">
+        <div>
+          <h1>My Account</h1>
+          <div>Available balance</div>
+          <div class="balance" id="balance">£500.00</div>
+        </div>
+        <div class="currency-wrap">
+          <label for="currency">Display currency</label>
+          <select id="currency" aria-label="Choose currency">
+            <option value="GBP" selected>GBP (£)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+          <div class="rate-note" id="rateNote">Loading live exchange rates…</div>
+        </div>
+      </div>
     </section>
 
     <section class="grid">
@@ -65,7 +92,7 @@
         <h2>Pay someone</h2>
         <label for="payee">Who are you paying?</label>
         <input id="payee" type="text" placeholder="e.g. Sam" />
-        <label for="payAmount">Amount ($)</label>
+        <label for="payAmount">Amount</label>
         <input id="payAmount" type="number" step="0.01" placeholder="0.00" />
         <button type="submit">Pay</button>
         <div class="msg" id="payMsg" role="status"></div>
@@ -73,7 +100,7 @@
 
       <form class="card" id="withdrawForm">
         <h2>Withdraw cash</h2>
-        <label for="wAmount">Amount ($)</label>
+        <label for="wAmount">Amount</label>
         <input id="wAmount" type="number" step="0.01" placeholder="0.00" />
         <button type="submit" class="alt">Withdraw</button>
         <div class="msg" id="wMsg" role="status"></div>
@@ -87,38 +114,78 @@
   </main>
 
   <script>
-    let balance = 500; // pretend money only!
-    const transactions = [];
+    // Canonical account currency is GBP. We convert only for display/input.
+    let balanceGBP = 500;
+    const transactions = []; // stored as GBP for accuracy
 
+    const currencyEl = document.getElementById('currency');
     const balanceEl = document.getElementById('balance');
     const historyEl = document.getElementById('history');
+    const rateNoteEl = document.getElementById('rateNote');
 
-    function money(n) { return '$' + n.toFixed(2); }
+    // Fallback rates so app still works if API fails.
+    let rates = { GBP: 1, EUR: 1.17, USD: 1.31 };
+    let usingLiveRates = false;
+
+    const symbols = { GBP: '£', EUR: '€', USD: '$' };
+
+    function currentCurrency() {
+      return currencyEl.value;
+    }
+
+    function toDisplayAmount(gbpAmount, currency) {
+      return gbpAmount * rates[currency];
+    }
+
+    function toGBP(amountInSelectedCurrency, currency) {
+      return amountInSelectedCurrency / rates[currency];
+    }
+
+    function money(amount, currency = currentCurrency()) {
+      return symbols[currency] + amount.toFixed(2);
+    }
+
+    function renderRateNote() {
+      if (usingLiveRates) {
+        rateNoteEl.textContent = `Live rates loaded (base GBP): 1 GBP = ${rates.EUR.toFixed(4)} EUR, ${rates.USD.toFixed(4)} USD`;
+      } else {
+        rateNoteEl.textContent = 'Using fallback rates (offline).';
+      }
+    }
 
     function render() {
-      balanceEl.textContent = money(balance);
+      const cur = currentCurrency();
+      const displayBalance = toDisplayAmount(balanceGBP, cur);
+      balanceEl.textContent = money(displayBalance, cur);
+
       if (transactions.length === 0) {
         historyEl.innerHTML = '<li>No transactions yet</li>';
         return;
       }
+
       historyEl.innerHTML = '';
       transactions.forEach(t => {
         const li = document.createElement('li');
-        const label = document.createElement('span');
-        label.textContent = t.label; // textContent keeps names safe
+
+        const left = document.createElement('div');
+        left.className = 'txn-main';
+
+        const title = document.createElement('span');
+        title.textContent = t.label;
+
+        const sub = document.createElement('span');
+        sub.className = 'txn-sub';
+        sub.textContent = `Stored as GBP ${money(t.amountGBP, 'GBP')}`;
+
+        left.append(title, sub);
+
         const amt = document.createElement('span');
         amt.className = 'out';
-        amt.textContent = '-' + money(t.amount);
-        li.append(label, amt);
+        amt.textContent = '-' + money(toDisplayAmount(t.amountGBP, cur), cur);
+
+        li.append(left, amt);
         historyEl.appendChild(li);
       });
-    }
-
-    // Returns an error message, or '' if the amount is fine
-    function checkAmount(amount) {
-      if (isNaN(amount) || amount <= 0) return 'Enter an amount bigger than $0.';
-      if (amount > balance) return 'Not enough money in your account.';
-      return '';
     }
 
     function show(el, text, ok) {
@@ -126,19 +193,61 @@
       el.className = 'msg ' + (ok ? 'ok' : 'err');
     }
 
+    function checkAmountInSelectedCurrency(amountSelected) {
+      const cur = currentCurrency();
+      if (isNaN(amountSelected) || amountSelected <= 0) {
+        return `Enter an amount bigger than ${money(0, cur)}.`;
+      }
+
+      const amountGBP = toGBP(amountSelected, cur);
+      if (amountGBP > balanceGBP) {
+        return `Not enough money. Max available is ${money(toDisplayAmount(balanceGBP, cur), cur)}.`;
+      }
+      return '';
+    }
+
+    async function fetchLiveRates() {
+      try {
+        const res = await fetch('https://api.frankfurter.app/latest?from=GBP&to=EUR,USD');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+
+        if (!data || !data.rates || !data.rates.EUR || !data.rates.USD) {
+          throw new Error('Unexpected rates payload');
+        }
+
+        rates = {
+          GBP: 1,
+          EUR: Number(data.rates.EUR),
+          USD: Number(data.rates.USD)
+        };
+        usingLiveRates = true;
+      } catch (err) {
+        usingLiveRates = false;
+        console.warn('Using fallback rates:', err);
+      }
+
+      renderRateNote();
+      render();
+    }
+
     document.getElementById('payForm').addEventListener('submit', e => {
       e.preventDefault();
       const msg = document.getElementById('payMsg');
       const payee = document.getElementById('payee').value.trim();
-      const amount = parseFloat(document.getElementById('payAmount').value);
+      const amountSelected = parseFloat(document.getElementById('payAmount').value);
+      const cur = currentCurrency();
 
       if (!payee) return show(msg, 'Type who you are paying.', false);
-      const problem = checkAmount(amount);
+
+      const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
 
-      balance -= amount;
-      transactions.unshift({ label: 'Paid ' + payee, amount });
-      show(msg, 'Paid ' + money(amount) + ' to ' + payee + '!', true);
+      const amountGBP = toGBP(amountSelected, cur);
+      balanceGBP -= amountGBP;
+      transactions.unshift({ label: 'Paid ' + payee, amountGBP });
+
+      show(msg, `Paid ${money(amountSelected, cur)} to ${payee}!`, true);
       e.target.reset();
       render();
     });
@@ -146,19 +255,26 @@
     document.getElementById('withdrawForm').addEventListener('submit', e => {
       e.preventDefault();
       const msg = document.getElementById('wMsg');
-      const amount = parseFloat(document.getElementById('wAmount').value);
+      const amountSelected = parseFloat(document.getElementById('wAmount').value);
+      const cur = currentCurrency();
 
-      const problem = checkAmount(amount);
+      const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
 
-      balance -= amount;
-      transactions.unshift({ label: 'Cash withdrawal', amount });
-      show(msg, 'Withdrew ' + money(amount) + '.', true);
+      const amountGBP = toGBP(amountSelected, cur);
+      balanceGBP -= amountGBP;
+      transactions.unshift({ label: 'Cash withdrawal', amountGBP });
+
+      show(msg, `Withdrew ${money(amountSelected, cur)}.`, true);
       e.target.reset();
       render();
     });
 
+    currencyEl.addEventListener('change', render);
+
+    renderRateNote();
     render();
+    fetchLiveRates();
   </script>
 </body>
 </html>
