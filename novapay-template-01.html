@@ -432,7 +432,8 @@
     /* ---------- STATE (all money stored in GBP) ---------- */
     const STORAGE_KEY = 'novapay-state-v1';
     const ADULT_PIN = '1234'; // demo only — not real security
-    const XP_PER_LEVEL = 100;
+    const BASE_XP = 100;       // XP needed to get from level 1 to level 2
+    const XP_GROWTH = 1.1;     // each level needs 10% more XP than the one before
     const LEVEL_NAMES = ['Rookie Saver', 'Coin Collector', 'Smart Spender', 'Budget Hero', 'Money Wizard',
                          'Savings Star', 'Finance Ninja', 'Wealth Legend'];
 
@@ -480,15 +481,27 @@
     }
 
     /* ---------- XP + LEVELS ---------- */
+    // XP needed to finish a given level: 100, 110, 121, 133, 146 ... (+10% every level)
+    function xpForLevel(level) {
+      return Math.round(BASE_XP * Math.pow(XP_GROWTH, level - 1));
+    }
+
     function levelInfo(xp) {
-      const level = Math.floor(xp / XP_PER_LEVEL) + 1;
-      const into = xp % XP_PER_LEVEL;
+      let level = 1;
+      let remaining = Math.max(0, xp);
+      let need = xpForLevel(level);
+      while (remaining >= need) {
+        remaining -= need;
+        level++;
+        need = xpForLevel(level);
+      }
       return {
         level,
         name: LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)],
-        into,
-        pct: (into / XP_PER_LEVEL) * 100,
-        toNext: XP_PER_LEVEL - into
+        into: remaining,
+        need,
+        pct: (remaining / need) * 100,
+        toNext: need - remaining
       };
     }
 
@@ -625,7 +638,8 @@
       $(prefix + 'LevelName').textContent = info.name;
       $(prefix + 'Xp').textContent = state.xp + ' XP';
       $(prefix + 'XpFill').style.width = info.pct + '%';
-      $(prefix + 'XpNext').textContent = `${info.toNext} XP to level ${info.level + 1}`;
+      $(prefix + 'XpNext').textContent =
+        `${info.into} / ${info.need} XP this level · ${info.toNext} XP to level ${info.level + 1}`;
       if (prefix === 'kid') $('kidXpBar').setAttribute('aria-valuenow', String(Math.round(info.pct)));
     }
 
