@@ -254,6 +254,43 @@
     @keyframes success-pulse { 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--good) 30%, transparent); } }
     @keyframes confetti-burst { to { transform: translate(var(--dx), var(--dy)) rotate(720deg); opacity: 0; } }
 
+    /* ---------- PHASE 3 ADDITIONS ---------- */
+    /* accessibility options (saved in localStorage, applied as classes on <html>) */
+    html.a11y-large { font-size: 125%; }
+    html.a11y-dyslexic body, html.a11y-dyslexic input, html.a11y-dyslexic select, html.a11y-dyslexic button {
+      font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Neue', Verdana, sans-serif; letter-spacing: .03em; word-spacing: .08em;
+    }
+    .a11y-panel summary { cursor: pointer; font-weight: 900; color: var(--ink); font-size: 1.15rem; }
+    .a11y-panel summary:focus-visible { outline: 4px solid var(--accent2); outline-offset: 2px; }
+    .opt { display: flex; align-items: center; gap: 10px; margin: 10px 0 0; font-weight: 700; }
+    .opt input { width: 22px; height: 22px; flex: none; }
+    .inline-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .inline-row > div { flex: 1; min-width: 150px; }
+    .inline-row button { width: auto; margin: 0; }
+    .profile-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 800; color: var(--muted); }
+    .avatar { font-size: 1.9rem; line-height: 1; }
+    .avatar-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .avatar-picker button { width: auto; margin: 0; padding: 6px 12px; font-size: 1.5rem; background: var(--tint); color: var(--ink); box-shadow: none; }
+    .avatar-picker button[aria-pressed="true"] { outline: 4px solid var(--accent2); outline-offset: 2px; background: var(--card); }
+    .chip-status { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 2px solid currentColor; background: var(--card); font-size: .78rem; font-weight: 800; white-space: nowrap; color: var(--ink); }
+    .chip-status.overdue { color: var(--bad); }
+    .chip-status.soon { color: var(--accent); }
+    .chip-status.done { color: var(--good); }
+    li.goal.overdue-goal { border-left: 6px solid var(--bad); }
+    li.goal.upcoming-goal { border-left: 6px solid var(--accent); }
+    .roadmap { font-size: .92rem; font-weight: 700; color: var(--text); margin-top: 6px; }
+    .jar-pick { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .jar-pick label { margin: 0; font-size: .85rem; }
+    .jar-pick select { width: auto; padding: 4px 8px; font-size: .9rem; border-radius: 10px; }
+    .note-line { font-size: .88rem; font-weight: 700; color: var(--accent2); overflow-wrap: anywhere; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+    .metric-grid .stat-card { box-shadow: none; }
+    .pin-confirm { margin-top: 10px; }
+    .emoji-bit { position: absolute; font-size: 1.8rem; animation: emoji-float 1.4s ease-out forwards; }
+    .emoji-bit.fall { animation-name: emoji-fall; }
+    @keyframes emoji-float { from { transform: translate(0, 0) scale(.6); opacity: 1; } to { transform: translate(var(--dx), -320px) scale(1.3); opacity: 0; } }
+    @keyframes emoji-fall { from { transform: translate(var(--dx), -40vh); opacity: 1; } to { transform: translate(var(--dx), 40vh); opacity: 0; } }
+
     @media (max-width: 780px) {
       .grid { grid-template-columns: 1fr; }
       .controls { grid-template-columns: 1fr; min-width: 220px; width: 100%; }
@@ -280,6 +317,7 @@
       <div class="top-row">
         <div>
           <h1 id="pageTitle">My Money Hub</h1>
+          <div class="profile-line" id="profileLine"><span class="avatar" id="headerAvatar" aria-hidden="true">🧒</span><span id="headerName">Timmy</span><span class="badge" id="headerTitle">Rookie Saver</span></div>
           <div class="balance-label" id="balanceLabel">You have</div>
           <div class="balance"><span class="coin" aria-hidden="true">🪙</span> <span id="balance">£500.00</span></div>
         </div>
@@ -300,6 +338,19 @@
         </div>
       </div>
     </section>
+
+    <details class="card a11y-panel" id="a11yPanel">
+      <summary>♿ Accessibility &amp; sound options</summary>
+      <label class="opt" for="optLarge"><input type="checkbox" id="optLarge" /> Larger text</label>
+      <label class="opt" for="optDyslexic"><input type="checkbox" id="optDyslexic" /> Dyslexia-friendly font</label>
+      <label class="opt" for="optSound"><input type="checkbox" id="optSound" /> Celebration sounds (off by default)</label>
+      <div class="actions" id="speechControls">
+        <button type="button" class="small" id="readSummaryBtn">🔊 Read my summary</button>
+        <button type="button" class="small" id="readGoalsBtn">🎯 Read my goals</button>
+        <button type="button" class="small alt" id="stopReadBtn">⏹ Stop reading</button>
+      </div>
+      <div class="msg" id="a11yMsg" role="status"></div>
+    </details>
 
     <div class="mode-switch" role="group" aria-label="Choose interface">
       <button type="button" id="kidModeBtn" aria-pressed="true">🧒 Kid view</button>
@@ -322,6 +373,16 @@
         <button type="button" id="quickSend">✉️ Send money</button>
         <button type="button" class="alt" id="quickWithdraw">💵 Withdraw cash</button>
       </div>
+
+      <form class="card" id="profileForm">
+        <h2>🧒 My profile</h2>
+        <label for="profileName">My name</label>
+        <input id="profileName" type="text" maxlength="20" placeholder="Timmy" autocomplete="off" />
+        <div id="avatarLabel" class="goal-meta" style="margin-top:10px">Pick my avatar</div>
+        <div class="avatar-picker" id="avatarPicker" role="group" aria-labelledby="avatarLabel"></div>
+        <button type="submit">Save my profile</button>
+        <div class="msg" id="profileMsg" role="status"></div>
+      </form>
 
       <section class="card">
         <h2>⭐ My level</h2>
@@ -366,7 +427,19 @@
       </section>
 
       <section class="card">
+        <h2>✅ My task checklist</h2>
+        <div class="goal-meta" id="taskProgressText"></div>
+        <div class="bar thin" role="progressbar" aria-label="Tasks finished" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="taskProgressBar"><div class="bar-fill" id="taskProgressFill"></div></div>
+        <div class="goal-meta" id="taskStreak"></div>
+        <ul id="kidTasks"></ul>
+      </section>
+
+      <section class="card">
         <h2>🎯 My goals</h2>
+        <label for="weeklySave">How much can I save each week?</label>
+        <input id="weeklySave" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" aria-describedby="weeklySaveHelp" />
+        <div class="goal-meta" id="weeklySaveHelp">I use this to guess how many weeks each savings goal will take.</div>
+        <div class="msg" id="weeklyMsg" role="status"></div>
         <ul id="kidGoals"></ul>
       </section>
 
@@ -384,6 +457,30 @@
       </section>
 
       <section class="card">
+        <h2>🫙 My jars &amp; wish list</h2>
+        <p class="goal-meta">All jars share your balance in this demo. Each wish shows how close you are to its target.</p>
+        <ul id="jarList"></ul>
+        <form id="jarForm" class="inline-row">
+          <div>
+            <label for="jarName">New jar name</label>
+            <input id="jarName" type="text" maxlength="24" placeholder="e.g. New bike" autocomplete="off" />
+          </div>
+          <div>
+            <label for="jarEmoji">Picture</label>
+            <select id="jarEmoji">
+              <option value="🐷">🐷 Piggy</option>
+              <option value="🚲">🚲 Bike</option>
+              <option value="🎮">🎮 Game</option>
+              <option value="✈️">✈️ Trip</option>
+              <option value="🎁">🎁 Gift</option>
+            </select>
+          </div>
+          <button type="submit">Add jar</button>
+        </form>
+        <div class="msg" id="jarMsg" role="status"></div>
+      </section>
+
+      <section class="card">
         <h2>🏅 Achievements</h2>
         <div class="achievement-list" id="achievements" aria-live="polite"></div>
       </section>
@@ -396,6 +493,14 @@
           <button type="button" data-history-filter="received" aria-pressed="false">Received</button>
           <button type="button" data-history-filter="withdrawals" aria-pressed="false">Withdrawals</button>
         </div>
+        <div class="filter-tabs" role="group" aria-label="Filter history by date">
+          <button type="button" data-history-range="all" aria-pressed="true">Any time</button>
+          <button type="button" data-history-range="today" aria-pressed="false">Today</button>
+          <button type="button" data-history-range="week" aria-pressed="false">This week</button>
+          <button type="button" data-history-range="month" aria-pressed="false">This month</button>
+        </div>
+        <label for="historySearch">Search history</label>
+        <input id="historySearch" type="search" maxlength="40" placeholder="Search names and notes" autocomplete="off" />
         <ul id="history"></ul>
         <h3>Last 7 transactions</h3>
         <div class="chart" id="spendingChart" role="img" aria-label="Transaction amounts for the last seven transactions"></div>
@@ -420,6 +525,14 @@
       </section>
 
       <div id="adultContent" hidden>
+        <section class="card" aria-labelledby="linkedChildTitle">
+          <h2 id="linkedChildTitle">👨‍👧 Linked child account</h2>
+          <div class="profile-line" id="linkedChildLine"></div>
+          <div class="metric-grid" id="linkedMetrics"></div>
+          <button type="button" class="alt" id="exportCsvBtn">⬇️ Download CSV report</button>
+          <div class="msg" id="exportMsg" role="status"></div>
+        </section>
+
         <section class="card">
           <h2>Child progress</h2>
           <div class="level-row">
@@ -455,6 +568,12 @@
             <div id="targetWrap">
               <label for="goalTarget">Target balance</label>
               <input id="goalTarget" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+              <label for="goalJar">Savings jar</label>
+              <select id="goalJar"></select>
+            </div>
+            <div id="dueWrap" hidden>
+              <label for="goalDue">Due date (optional)</label>
+              <input id="goalDue" type="date" />
             </div>
 
             <label for="rewardStore">Gift card reward</label>
@@ -482,6 +601,8 @@
               <h2>💷 Give pocket money</h2>
               <label for="moneyAmount">Amount</label>
               <input id="moneyAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+              <label for="moneyNote">Message for your child (optional)</label>
+              <input id="moneyNote" type="text" maxlength="80" placeholder="e.g. Great job helping with chores!" autocomplete="off" />
               <div class="chips" aria-label="Weekly pocket money presets">
                 <button type="button" class="small" data-weekly-amount="5">Add £5 weekly</button>
                 <button type="button" class="small" data-weekly-amount="10">Add £10 weekly</button>
@@ -490,9 +611,23 @@
               <button type="submit" class="alt">Add to balance</button>
               <div class="msg" id="moneyMsg" role="status"></div>
             </form>
+            <form class="card" id="allowanceForm" style="margin-bottom:18px">
+              <h2>🗓️ Weekly allowance</h2>
+              <label for="allowanceAmount">Amount each week</label>
+              <input id="allowanceAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+              <label for="allowanceNext">Next payment date</label>
+              <input id="allowanceNext" type="date" />
+              <label class="opt" for="allowanceActive"><input type="checkbox" id="allowanceActive" /> Pay automatically</label>
+              <div class="goal-meta" id="allowanceStatus"></div>
+              <div class="actions">
+                <button type="submit" class="alt">Save schedule</button>
+                <button type="button" id="allowanceNowBtn">Simulate payment now</button>
+              </div>
+              <div class="msg" id="allowanceMsg" role="status"></div>
+            </form>
             <section class="card" style="margin-bottom:0">
               <h2>Reset</h2>
-              <p class="goal-meta">Clears goals, rewards, XP and balance back to the start.</p>
+              <p class="goal-meta">Clears goals, rewards, XP, jars, profile, allowance and balance back to the start.</p>
               <button type="button" class="danger" id="resetBtn">Reset everything</button>
             </section>
           </div>
@@ -500,6 +635,7 @@
 
         <section class="card">
           <h2>🎯 Goals you've set</h2>
+          <div class="goal-meta" id="adultTaskSummary"></div>
           <ul id="adultGoals"></ul>
         </section>
 
@@ -557,19 +693,95 @@
 
     /* ---------- STATE (all money stored in GBP) ---------- */
     const STORAGE_KEY = 'novapay-state-v1';
+    const PREFS_KEY = 'novapay-prefs-v1'; // accessibility + sound options (kept when you reset money/progress)
     const ADULT_PIN = '1234'; // demo only — not real security
     const BASE_XP = 100;       // XP needed to get from level 1 to level 2
     const XP_GROWTH = 1.1;     // each level needs 10% more XP than the one before
     const LEVEL_NAMES = ['Rookie Saver', 'Coin Collector', 'Smart Spender', 'Budget Hero', 'Money Wizard',
                          'Savings Star', 'Finance Ninja', 'Wealth Legend'];
+    const DEFAULT_CHILD_NAME = 'Timmy';
+    const AVATARS = ['🧒', '🦊', '🐼', '🦄', '🐲', '🚀', '⚽', '🎨'];
+    const MAIN_JAR_ID = 'jar-main';
+    const MAX_JARS = 6;
 
-    const defaultState = () => ({ balanceGBP: 500, transactions: [], goals: [], rewards: [], xp: 0, nextId: 1 });
+    const defaultState = () => ({
+      balanceGBP: 500, transactions: [], goals: [], rewards: [], xp: 0, nextId: 1,
+      jars: [{ id: MAIN_JAR_ID, name: 'Main jar', emoji: '🐷' }],
+      profile: { name: '', avatar: AVATARS[0] },
+      weeklySaveGBP: 5,
+      allowance: { active: false, amountGBP: 0, nextDue: '' }
+    });
+
+    // Merge saved data onto the defaults so older saves (without jars, profile, etc.) still work.
+    function normalizeState(saved) {
+      const base = defaultState();
+      const src = saved && typeof saved === 'object' ? saved : {};
+      const s = Object.assign(base, src);
+      ['transactions', 'goals', 'rewards'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
+      s.balanceGBP = Number.isFinite(Number(s.balanceGBP)) ? Number(s.balanceGBP) : 500;
+      s.xp = Number.isFinite(Number(s.xp)) ? Number(s.xp) : 0;
+      s.nextId = Number.isFinite(Number(s.nextId)) ? Number(s.nextId) : 1;
+      s.profile = Object.assign(defaultState().profile, src.profile && typeof src.profile === 'object' ? src.profile : {});
+      s.profile.name = String(s.profile.name || '').slice(0, 20);
+      if (!AVATARS.includes(s.profile.avatar)) s.profile.avatar = AVATARS[0];
+      s.allowance = Object.assign(defaultState().allowance, src.allowance && typeof src.allowance === 'object' ? src.allowance : {});
+      s.allowance.active = !!s.allowance.active;
+      s.allowance.amountGBP = Math.max(0, Number(s.allowance.amountGBP) || 0);
+      s.allowance.nextDue = parseDateKey(s.allowance.nextDue) ? s.allowance.nextDue : '';
+      const w = Number(s.weeklySaveGBP);
+      s.weeklySaveGBP = Number.isFinite(w) && w >= 0 ? w : 5;
+      if (!Array.isArray(s.jars) || s.jars.length === 0) s.jars = defaultState().jars;
+      s.jars = s.jars.filter(j => j && j.id !== undefined).map(j => ({ id: String(j.id), name: String(j.name || 'Jar').slice(0, 24), emoji: String(j.emoji || '🐷') }));
+      if (s.jars.length === 0) s.jars = defaultState().jars;
+      // old goals have no jar or due date: put them in the first jar
+      s.goals.forEach(g => {
+        if (!s.jars.some(j => j.id === String(g.jarId))) g.jarId = s.jars[0].id;
+        g.jarId = String(g.jarId);
+        if (!parseDateKey(g.dueDate)) g.dueDate = '';
+      });
+      return s;
+    }
+
+    /* ---------- DATE HELPERS (local dates as YYYY-MM-DD) ---------- */
+    const pad2 = n => String(n).padStart(2, '0');
+    const dateKey = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    const todayKey = () => dateKey(new Date());
+    function parseDateKey(key) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key || '');
+      return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+    }
+    function addDaysKey(key, n) {
+      const d = parseDateKey(key);
+      d.setDate(d.getDate() + n);
+      return dateKey(d);
+    }
+    const daysBetween = (fromKey, toKey) => Math.round((parseDateKey(toKey) - parseDateKey(fromKey)) / 86400000);
+
     let state = defaultState();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) state = Object.assign(defaultState(), JSON.parse(raw));
+      if (raw) state = normalizeState(JSON.parse(raw));
     } catch (e) {}
     function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+    const childName = () => state.profile.name || DEFAULT_CHILD_NAME;
+    let currentMode = 'kid';
+
+    /* ---------- ACCESSIBILITY + SOUND PREFS ---------- */
+    let prefs = { largeText: false, dyslexic: false, sound: false }; // sound is OFF by default
+    try {
+      const saved = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+      if (saved && typeof saved === 'object') {
+        prefs = { largeText: saved.largeText === true, dyslexic: saved.dyslexic === true, sound: saved.sound === true };
+      }
+    } catch (e) {}
+    function savePrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) {} }
+    function applyPrefs() {
+      document.documentElement.classList.toggle('a11y-large', prefs.largeText);
+      document.documentElement.classList.toggle('a11y-dyslexic', prefs.dyslexic);
+      $('optLarge').checked = prefs.largeText;
+      $('optDyslexic').checked = prefs.dyslexic;
+      $('optSound').checked = prefs.sound;
+    }
 
     /* ---------- CURRENCY ---------- */
     const currencyEl = $('currency');
@@ -644,25 +856,64 @@
       }, 6000);
     }
 
-    function celebrate() {
+    // Sound only plays if the child switched it on AND has already clicked/tapped the page (never autoplays).
+    let userInteracted = false;
+    ['pointerdown', 'keydown'].forEach(evt => document.addEventListener(evt, () => { userInteracted = true; }, { once: true }));
+    let audioCtx = null;
+    function playChime(style) {
+      if (!prefs.sound || !userInteracted) return;
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = audioCtx || new Ctx();
+        const notes = style === 'stars' ? [523, 659, 784, 1047] : style === 'coins' ? [880, 1175] : [523, 659, 784];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const t = audioCtx.currentTime + i * 0.13;
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(0.06, t + 0.02); // keep it quiet and gentle
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(t); osc.stop(t + 0.3);
+        });
+      } catch (e) {}
+    }
+
+    // style: 'confetti' (default), 'stars' (level up) or 'coins' (gift card reward)
+    function celebrate(style = 'confetti') {
+      playChime(style);
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const layer = $('celebration');
       const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c77dff'];
       layer.replaceChildren();
-      for (let i = 0; i < 30; i++) {
-        const bit = el('span', 'confetti');
-        bit.style.left = '50%';
-        bit.style.setProperty('--dx', `${Math.round(Math.random() * 460 - 230)}px`);
-        bit.style.setProperty('--dy', `${Math.round(Math.random() * 420 - 210)}px`);
-        bit.style.setProperty('--confetti-color', colors[i % colors.length]);
-        layer.append(bit);
+      if (style === 'stars' || style === 'coins') {
+        const icon = style === 'stars' ? '⭐' : '🪙';
+        for (let i = 0; i < 16; i++) {
+          const bit = el('span', 'emoji-bit' + (style === 'coins' ? ' fall' : ''), icon);
+          bit.style.left = `${10 + Math.round(Math.random() * 80)}%`;
+          bit.style.top = style === 'coins' ? '50%' : '70%';
+          bit.style.setProperty('--dx', `${Math.round(Math.random() * 120 - 60)}px`);
+          bit.style.animationDelay = `${Math.round(Math.random() * 300)}ms`;
+          layer.append(bit);
+        }
+      } else {
+        for (let i = 0; i < 30; i++) {
+          const bit = el('span', 'confetti');
+          bit.style.left = '50%';
+          bit.style.setProperty('--dx', `${Math.round(Math.random() * 460 - 230)}px`);
+          bit.style.setProperty('--dy', `${Math.round(Math.random() * 420 - 210)}px`);
+          bit.style.setProperty('--confetti-color', colors[i % colors.length]);
+          layer.append(bit);
+        }
       }
       document.querySelectorAll('.level-badge').forEach(badge => {
         badge.classList.remove('just-unlocked');
         void badge.offsetWidth;
         badge.classList.add('just-unlocked');
       });
-      setTimeout(() => layer.replaceChildren(), 1200);
+      setTimeout(() => layer.replaceChildren(), 1800);
     }
 
     function makeCode() {
@@ -692,7 +943,7 @@
       let text = `🎉 Goal complete: "${goal.title}"! +${goal.xp} XP`;
       if (goal.rewardGBP > 0) text += ` and a ${goal.store} gift card (${moneyFromGBP(goal.rewardGBP)})!`;
       if (after > before) text += ` ⭐ LEVEL UP — you're now level ${after}!`;
-      celebrate();
+      celebrate(after > before ? 'stars' : goal.rewardGBP > 0 ? 'coins' : 'confetti');
       toast(text);
     }
 
@@ -715,8 +966,64 @@
       return 'Reward: ' + parts.join(' + ');
     }
 
+    // Goal roadmap: how much is left and (optionally) how long at the weekly saving amount.
+    function goalRoadmapText(g) {
+      const remaining = Math.max(0, g.targetGBP - state.balanceGBP);
+      if (remaining <= 1e-9) return 'You already have enough saved for this one — amazing!';
+      let text = `You need ${moneyFromGBP(remaining)} more.`;
+      if (state.weeklySaveGBP > 0) {
+        const weeks = Math.max(1, Math.ceil(remaining / state.weeklySaveGBP - 1e-9));
+        text += ` At ${moneyFromGBP(state.weeklySaveGBP)}/week, you'll reach this in ${weeks} week${weeks === 1 ? '' : 's'}.`;
+      } else {
+        text += ' Type a weekly saving amount above to see how long it will take.';
+      }
+      return text;
+    }
+
+    // Task due-date status: overdue / due today / due soon / upcoming. Returns null if no due date or already done.
+    function dueInfo(g) {
+      if (g.type !== 'task' || g.done || !parseDateKey(g.dueDate)) return null;
+      const diff = daysBetween(todayKey(), g.dueDate);
+      const when = parseDateKey(g.dueDate).toLocaleDateString();
+      if (diff < 0) return { kind: 'overdue', text: `⚠️ Overdue by ${-diff} day${diff === -1 ? '' : 's'}`, spoken: `overdue by ${-diff} day${diff === -1 ? '' : 's'}` };
+      if (diff === 0) return { kind: 'soon', text: '⏰ Due today', spoken: 'due today' };
+      if (diff <= 2) return { kind: 'soon', text: `⏳ Due in ${diff} day${diff === 1 ? '' : 's'}`, spoken: `due in ${diff} day${diff === 1 ? '' : 's'}` };
+      return { kind: 'upcoming', text: `📅 Due ${when}`, spoken: `due ${when}` };
+    }
+
+    // Number of days in a row (up to today/yesterday) with at least one finished task.
+    function taskStreak() {
+      const days = new Set(state.goals.filter(g => g.type === 'task' && g.done && g.doneAt)
+        .map(g => dateKey(new Date(g.doneAt))));
+      let day = todayKey();
+      if (!days.has(day)) day = addDaysKey(day, -1);
+      let streak = 0;
+      while (days.has(day)) { streak++; day = addDaysKey(day, -1); }
+      return streak;
+    }
+
+    function jarSelect(g) {
+      const row = el('div', 'jar-pick');
+      const label = el('label', '', 'Jar:');
+      const id = 'goalJarPick-' + g.id + '-' + Math.random().toString(36).slice(2, 7);
+      label.htmlFor = id;
+      const select = el('select');
+      select.id = id;
+      state.jars.forEach(j => {
+        const opt = el('option', '', `${j.emoji} ${j.name}`);
+        opt.value = j.id;
+        select.append(opt);
+      });
+      select.value = g.jarId;
+      select.addEventListener('change', () => { g.jarId = select.value; save(); renderAll(); });
+      row.append(label, select);
+      return row;
+    }
+
     function goalItem(g, adult) {
-      const li = el('li', 'goal' + (g.done ? ' done' : ''));
+      const due = dueInfo(g);
+      const li = el('li', 'goal' + (g.done ? ' done' : '') +
+        (due && due.kind === 'overdue' ? ' overdue-goal' : due ? ' upcoming-goal' : ''));
       const wrap = el('div', '');
       wrap.style.width = '100%';
 
@@ -731,14 +1038,18 @@
 
       const right = el('div', 'actions');
       if (g.done) {
-        right.append(el('span', 'badge', 'Done'));
-      } else if (adult && g.type === 'task') {
-        const b = el('button', 'small', 'Mark done');
-        b.type = 'button';
-        b.addEventListener('click', () => { completeGoal(g); save(); renderAll(); });
-        right.append(b);
-      } else if (!adult && g.type === 'task') {
-        right.append(el('span', 'badge', 'Ask an adult'));
+        right.append(el('span', 'chip-status done', 'Done'));
+      } else if (g.type === 'task') {
+        right.append(el('span', 'chip-status ' + (due ? due.kind : ''), due ? due.text : '📝 To do'));
+        if (adult) {
+          const b = el('button', 'small', 'Mark done');
+          b.type = 'button';
+          b.setAttribute('aria-label', 'Mark task done: ' + g.title);
+          b.addEventListener('click', () => { completeGoal(g); save(); renderAll(); });
+          right.append(b);
+        } else {
+          right.append(el('span', 'goal-meta', 'Ask a grown-up to tick it off'));
+        }
       }
       if (adult) {
         const d = el('button', 'small danger', 'Delete');
@@ -765,12 +1076,16 @@
         fill.style.width = pct + '%';
         bar.append(fill);
         wrap.append(bar);
+        if (!g.done) {
+          wrap.append(el('div', 'roadmap', '🗺️ ' + goalRoadmapText(g)));
+          wrap.append(jarSelect(g));
+        }
       }
       li.append(wrap);
       return li;
     }
 
-    function rewardItem(r) {
+    function rewardItem(r, adult) {
       const li = el('li', '');
       const box = el('div', 'giftcard');
       box.style.width = '100%';
@@ -784,18 +1099,62 @@
       const reveal = el('button', 'small', 'Reveal code');
       reveal.type = 'button';
       reveal.setAttribute('aria-expanded', 'false');
-      reveal.addEventListener('click', () => {
-        const visible = !codeValue.hidden;
-        codeValue.hidden = visible;
-        reveal.textContent = visible ? 'Reveal code' : 'Hide code';
-        reveal.setAttribute('aria-expanded', String(!visible));
-        if (!visible) {
+
+      // Kid view: a grown-up must type the PIN before the code is shown. Adult view reveals straight away.
+      const confirmBox = el('div', 'pin-confirm');
+      confirmBox.hidden = true;
+      const pinId = 'revealPin-' + r.id;
+      const pinLabel = el('label', '', 'Grown-up PIN to see the code');
+      pinLabel.htmlFor = pinId;
+      const pinInput = el('input');
+      pinInput.id = pinId;
+      pinInput.type = 'password';
+      pinInput.inputMode = 'numeric';
+      pinInput.maxLength = 8;
+      pinInput.autocomplete = 'off';
+      const confirmMsg = el('div', 'msg');
+      confirmMsg.setAttribute('role', 'status');
+      const confirmBtn = el('button', 'small', 'Confirm');
+      confirmBtn.type = 'button';
+      const cancelBtn = el('button', 'small alt', 'Cancel');
+      cancelBtn.type = 'button';
+      const confirmActions = el('div', 'actions');
+      confirmActions.append(confirmBtn, cancelBtn);
+      confirmBox.append(pinLabel, pinInput, confirmActions, confirmMsg);
+
+      function setVisible(visible) {
+        codeValue.hidden = !visible;
+        reveal.textContent = visible ? 'Hide code' : 'Reveal code';
+        reveal.setAttribute('aria-expanded', String(visible));
+        if (visible) {
           box.classList.remove('revealed');
           void box.offsetWidth;
           box.classList.add('revealed');
         } else box.classList.remove('revealed');
+      }
+      reveal.addEventListener('click', () => {
+        if (!codeValue.hidden) { setVisible(false); return; }
+        if (adult) { setVisible(true); return; }
+        confirmBox.hidden = false;
+        show(confirmMsg, 'Ask a grown-up to type the PIN to open your code.', true);
+        pinInput.focus();
       });
+      function tryConfirm() {
+        if (pinInput.value === ADULT_PIN) {
+          pinInput.value = '';
+          confirmBox.hidden = true;
+          setVisible(true);
+          reveal.focus();
+        } else {
+          show(confirmMsg, 'That PIN isn’t right. Ask a grown-up to help, then try again.', false);
+        }
+      }
+      confirmBtn.addEventListener('click', tryConfirm);
+      pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryConfirm(); } });
+      cancelBtn.addEventListener('click', () => { pinInput.value = ''; confirmBox.hidden = true; reveal.focus(); });
+
       box.append(reveal);
+      box.append(confirmBox);
       li.append(box);
       return li;
     }
@@ -832,6 +1191,9 @@
     }
 
     let historyFilter = 'all';
+    let historyRange = 'all';   // all | today | week | month
+    let historySearch = '';
+    let pendingAvatar = state.profile.avatar;
     let lastBalanceGBP = null;
     let lastBalanceCurrency = null;
     let balanceDisplayValue = null;
@@ -934,19 +1296,289 @@
       const activities = [
         ...state.transactions.map(transaction => ({
           at: transaction.at || '',
-          label: `${transaction.label} · ${moneyFromGBP(Math.abs(Number(transaction.amountGBP) || 0))}`
+          label: `${transaction.label} · ${moneyFromGBP(Math.abs(Number(transaction.amountGBP) || 0))}`,
+          note: transaction.note || ''
         })),
         ...state.goals.filter(goal => goal.done).map(goal => ({
           at: goal.doneAt || '',
-          label: `Completed goal: ${goal.title}`
+          label: `Completed goal: ${goal.title}`,
+          note: ''
         }))
       ].sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 12);
       renderList($('activityFeed'), activities, 'No activity yet.', activity => {
         const item = el('li', '');
-        item.append(el('span', '', activity.label));
+        const main = el('div', 'txn-main');
+        main.append(el('span', '', activity.label));
+        if (activity.note) main.append(el('span', 'note-line', '💌 ' + activity.note));
+        item.append(main);
         item.append(el('span', 'txn-sub', activity.at ? new Date(activity.at).toLocaleDateString() : 'Earlier'));
         return item;
       });
+    }
+
+    /* ---------- HISTORY FILTERS (type + date range + text search) ---------- */
+    function inHistoryRange(t) {
+      if (historyRange === 'all') return true;
+      const d = new Date(t.at);
+      if (isNaN(d)) return false;
+      const now = new Date();
+      if (historyRange === 'today') return dateKey(d) === dateKey(now);
+      if (historyRange === 'week') {
+        const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+        return d >= monday;
+      }
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+
+    function matchesHistorySearch(t) {
+      const q = historySearch.trim().toLowerCase();
+      return !q || `${t.label} ${t.note || ''}`.toLowerCase().includes(q);
+    }
+
+    function renderHistory(cur) {
+      const items = state.transactions.filter(t =>
+        (historyFilter === 'all' || transactionKind(t) === historyFilter) && inHistoryRange(t) && matchesHistorySearch(t));
+      const filtering = historyFilter !== 'all' || historyRange !== 'all' || historySearch.trim() !== '';
+      const empty = filtering && state.transactions.length > 0
+        ? 'Nothing matches yet — try “All” or a different date or search word.'
+        : 'Nothing yet — make your first move.';
+      renderList($('history'), items, empty, t => {
+        const li = el('li', '');
+        const left = el('div', 'txn-main');
+        left.append(el('span', '', t.label));
+        const when = t.at ? ' · ' + new Date(t.at).toLocaleDateString() : '';
+        left.append(el('span', 'txn-sub', 'Stored as ' + money(Math.abs(Number(t.amountGBP) || 0), 'GBP') + when));
+        if (t.note) left.append(el('span', 'note-line', '💌 Message: ' + t.note)); // parent note (textContent = safe)
+        li.append(left);
+        const incoming = t.amountGBP > 0;
+        li.append(el('span', incoming ? 'in' : 'out',
+          (incoming ? '+' : '-') + money(toDisplayAmount(Math.abs(t.amountGBP), cur), cur)));
+        return li;
+      });
+    }
+
+    /* ---------- PROFILE ---------- */
+    function renderProfile() {
+      const info = levelInfo(state.xp);
+      const name = childName();
+      const adult = currentMode === 'adult';
+      $('headerAvatar').textContent = state.profile.avatar;
+      $('headerName').textContent = name;
+      $('headerTitle').textContent = info.name;
+      $('pageTitle').textContent = adult ? 'Adult Dashboard' : `${name}'s Money Hub`;
+      $('balanceLabel').textContent = adult ? `${name}'s balance` : 'You have';
+      if (document.activeElement !== $('profileName')) $('profileName').value = state.profile.name;
+      const picker = $('avatarPicker');
+      picker.replaceChildren();
+      AVATARS.forEach(a => {
+        const b = el('button', '', a);
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Choose avatar ' + a);
+        b.setAttribute('aria-pressed', String(a === pendingAvatar));
+        b.addEventListener('click', () => { pendingAvatar = a; renderProfile(); });
+        picker.append(b);
+      });
+    }
+
+    /* ---------- TASK CHECKLIST (kid) ---------- */
+    function renderTasks() {
+      const tasks = state.goals.filter(g => g.type === 'task');
+      const doneCount = tasks.filter(g => g.done).length;
+      const pct = tasks.length ? doneCount / tasks.length * 100 : 0;
+      $('taskProgressText').textContent = tasks.length
+        ? `${doneCount} of ${tasks.length} tasks done`
+        : 'No tasks yet — ask a grown-up to add one!';
+      $('taskProgressFill').style.width = pct + '%';
+      $('taskProgressBar').setAttribute('aria-valuenow', String(Math.round(pct)));
+      const streak = taskStreak();
+      $('taskStreak').textContent = streak > 0
+        ? `🔥 ${streak}-day task streak! Keep it going.`
+        : 'Finish a task today to start a streak 🔥';
+      const order = g => (parseDateKey(g.dueDate) ? parseDateKey(g.dueDate).getTime() : Infinity);
+      const pending = tasks.filter(g => !g.done).sort((a, b) => (order(a) === order(b) ? 0 : order(a) < order(b) ? -1 : 1));
+      renderList($('kidTasks'), pending,
+        tasks.length ? 'All tasks done — brilliant! 🎉' : 'No tasks right now. Enjoy! 😎', g => goalItem(g, false));
+      const overdue = pending.filter(g => dueInfo(g) && dueInfo(g).kind === 'overdue').length;
+      const soon = pending.filter(g => dueInfo(g) && dueInfo(g).kind === 'soon').length;
+      const parts = [];
+      if (overdue) parts.push(`⚠️ ${overdue} overdue`);
+      if (soon) parts.push(`⏰ ${soon} due soon`);
+      $('adultTaskSummary').textContent = parts.length ? 'Tasks: ' + parts.join(' · ') : '';
+    }
+
+    /* ---------- JARS / WISH LIST ---------- */
+    function renderJars() {
+      renderList($('jarList'), state.jars, 'No jars yet.', jar => {
+        const li = el('li', '');
+        const wrap = el('div', '');
+        wrap.style.width = '100%';
+        const wishes = state.goals.filter(g => g.type === 'save' && g.jarId === jar.id);
+        const active = wishes.filter(g => !g.done).sort((a, b) => a.targetGBP - b.targetGBP);
+        wrap.append(el('strong', '', `${jar.emoji} ${jar.name}`));
+        wrap.append(el('div', 'goal-meta', `${active.length} wish${active.length === 1 ? '' : 'es'} saving · ${wishes.length - active.length} done`));
+        const nearest = active[0];
+        const pct = nearest ? goalProgress(nearest) : 0;
+        const bar = el('div', 'bar thin');
+        bar.setAttribute('role', 'progressbar');
+        bar.setAttribute('aria-label', `Progress for ${jar.name}`);
+        bar.setAttribute('aria-valuemin', '0');
+        bar.setAttribute('aria-valuemax', '100');
+        bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+        const fill = el('div', 'bar-fill');
+        fill.style.width = pct + '%';
+        bar.append(fill);
+        wrap.append(bar);
+        if (!nearest) {
+          wrap.append(el('div', 'goal-meta', 'No wishes here yet — pick this jar on a savings goal.'));
+        } else {
+          active.forEach(g => wrap.append(el('div', 'goal-meta',
+            `• ${g.title}: ${moneyFromGBP(Math.min(state.balanceGBP, g.targetGBP))} of ${moneyFromGBP(g.targetGBP)} (${Math.round(goalProgress(g))}%)`)));
+        }
+        li.append(wrap);
+        return li;
+      });
+      // keep the adult goal form's jar list in sync
+      const sel = $('goalJar');
+      const prev = sel.value;
+      sel.replaceChildren();
+      state.jars.forEach(j => {
+        const opt = el('option', '', `${j.emoji} ${j.name}`);
+        opt.value = j.id;
+        sel.append(opt);
+      });
+      sel.value = state.jars.some(j => j.id === prev) ? prev : state.jars[0].id;
+    }
+
+    /* ---------- ADULT: LINKED CHILD SUMMARY ---------- */
+    function sumGBP(list) { return list.reduce((sum, t) => sum + Math.abs(Number(t.amountGBP) || 0), 0); }
+
+    function renderLinkedChild() {
+      const info = levelInfo(state.xp);
+      const line = $('linkedChildLine');
+      line.replaceChildren(el('span', 'avatar', state.profile.avatar), el('span', '', childName()),
+        el('span', 'badge', `Level ${info.level} · ${info.name}`));
+      line.firstChild.setAttribute('aria-hidden', 'true');
+
+      const received = sumGBP(state.transactions.filter(t => t.amountGBP > 0));
+      const out = sumGBP(state.transactions.filter(t => t.amountGBP < 0));
+      const net = received - out;
+      const now = Date.now();
+      const weekMs = 7 * 86400000;
+      const spentBetween = (from, to) => sumGBP(state.transactions.filter(t => {
+        const at = Date.parse(t.at);
+        return t.amountGBP < 0 && at >= from && at < to;
+      }));
+      const thisWeek = spentBetween(now - weekMs, now + 1);
+      const lastWeek = spentBetween(now - 2 * weekMs, now - weekMs);
+      const diff = thisWeek - lastWeek;
+      const trend = Math.abs(diff) < 0.005 ? '→ Same as last week'
+        : diff > 0 ? `↑ ${moneyFromGBP(diff)} more than last week` : `↓ ${moneyFromGBP(-diff)} less than last week`;
+      const recipients = {};
+      state.transactions.forEach(t => {
+        if (transactionKind(t) === 'sent') {
+          const who = t.label.replace(/^Sent to /, '');
+          recipients[who] = (recipients[who] || 0) + Math.abs(t.amountGBP);
+        }
+      });
+      const top = Object.entries(recipients).sort((a, b) => b[1] - a[1])[0];
+      const tasks = state.goals.filter(g => g.type === 'task');
+      const overdue = tasks.filter(g => dueInfo(g) && dueInfo(g).kind === 'overdue').length;
+      const saveGoals = state.goals.filter(g => g.type === 'save');
+      const a = state.allowance;
+      const streak = taskStreak();
+      const metrics = [
+        ['Balance', moneyFromGBP(state.balanceGBP)],
+        ['Net money flow', (net >= 0 ? '+' : '-') + moneyFromGBP(Math.abs(net))],
+        ['Spent this week', moneyFromGBP(thisWeek)],
+        ['Spending trend', trend],
+        ['Most sent to', top ? `${top[0]} (${moneyFromGBP(top[1])})` : 'Nobody yet'],
+        ['Tasks done', `${tasks.filter(g => g.done).length} of ${tasks.length}` + (overdue ? ` · ${overdue} overdue` : '')],
+        ['Savings goals', `${saveGoals.filter(g => g.done).length} of ${saveGoals.length} reached`],
+        ['Task streak', `${streak} day${streak === 1 ? '' : 's'}`],
+        ['Allowance', a.active && a.amountGBP > 0 ? `${moneyFromGBP(a.amountGBP)}/week` : 'Not scheduled']
+      ];
+      const grid = $('linkedMetrics');
+      grid.replaceChildren();
+      metrics.forEach(([label, value]) => {
+        const card = el('div', 'stat-card');
+        card.append(el('span', '', label), el('strong', '', value));
+        grid.append(card);
+      });
+    }
+
+    /* ---------- ADULT: ALLOWANCE SCHEDULER (demo — no backend) ---------- */
+    function payAllowance() {
+      const a = state.allowance;
+      state.balanceGBP += a.amountGBP;
+      state.transactions.unshift({
+        label: 'Weekly allowance', amountGBP: a.amountGBP, at: new Date().toISOString(),
+        note: 'Your scheduled allowance arrived!'
+      });
+    }
+
+    // Pays every allowance that is due (catches up missed weeks, max 52). force=true pays the next one right now.
+    function applyAllowance(force) {
+      const a = state.allowance;
+      if (!(a.amountGBP > 0)) return 0;
+      let count = 0;
+      if (force) {
+        payAllowance(); count = 1;
+        const today = todayKey();
+        a.nextDue = addDaysKey(a.nextDue && a.nextDue > today ? a.nextDue : today, 7);
+      } else if (a.active) {
+        while (a.nextDue && a.nextDue <= todayKey() && count < 52) {
+          payAllowance(); count++;
+          a.nextDue = addDaysKey(a.nextDue, 7);
+        }
+      }
+      if (count) checkGoals();
+      return count;
+    }
+
+    function renderAllowance() {
+      const a = state.allowance;
+      $('allowanceStatus').textContent = a.active && a.amountGBP > 0
+        ? `Pays ${moneyFromGBP(a.amountGBP)} every week · next payment ${a.nextDue ? parseDateKey(a.nextDue).toLocaleDateString() : 'not set'}`
+        : 'No automatic allowance is set up.';
+      if (!$('allowanceForm').contains(document.activeElement)) {
+        $('allowanceAmount').value = a.amountGBP > 0 ? (Math.round(toDisplayAmount(a.amountGBP, currentCurrency()) * 100) / 100) : '';
+        $('allowanceNext').value = a.nextDue;
+        $('allowanceActive').checked = a.active;
+      }
+    }
+
+    /* ---------- CSV REPORT ---------- */
+    function csvCell(value, isText) {
+      let text = String(value === undefined || value === null ? '' : value);
+      if (isText && /^[=+\-@\t\r]/.test(text)) text = "'" + text; // stop spreadsheet formula injection
+      return /[",\n\r]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+    }
+
+    function buildCsv() {
+      const rows = [['Section', 'Date', 'Type', 'Description', 'Note', 'Amount (GBP)', 'Status']];
+      const info = levelInfo(state.xp);
+      rows.push(['Summary', todayKey(), 'Child', childName(), `Level ${info.level} ${info.name}`, state.balanceGBP.toFixed(2), `${state.xp} XP`]);
+      state.transactions.forEach(t => rows.push([
+        'Activity', t.at || '', transactionKind(t), t.label, t.note || '', (Number(t.amountGBP) || 0).toFixed(2), ''
+      ]));
+      state.goals.forEach(g => rows.push([
+        'Goal', g.doneAt || g.dueDate || '', g.type, g.title, g.type === 'save' ? 'Jar: ' + ((state.jars.find(j => j.id === g.jarId) || {}).name || '') : '',
+        (Number(g.targetGBP) || 0).toFixed(2), g.done ? 'Done' : (dueInfo(g) ? dueInfo(g).kind : 'In progress')
+      ]));
+      const numeric = new Set([5]);
+      return rows.map((row, r) => row.map((cell, c) => csvCell(cell, r > 0 && !numeric.has(c))).join(',')).join('\r\n');
+    }
+
+    function downloadCsv() {
+      const blob = new Blob(['\ufeff' + buildCsv()], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = el('a');
+      link.href = url;
+      link.download = `novapay-report-${todayKey()}.csv`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     function renderAll() {
@@ -975,33 +1607,27 @@
       lastBalanceGBP = state.balanceGBP;
       lastBalanceCurrency = cur;
 
+      renderProfile();
       renderLevel('kid');
       renderLevel('adult');
-
-      const filteredTransactions = historyFilter === 'all'
-        ? state.transactions
-        : state.transactions.filter(transaction => transactionKind(transaction) === historyFilter);
-      renderList($('history'), filteredTransactions, 'Nothing yet — make your first move.', t => {
-        const li = el('li', '');
-        const left = el('div', 'txn-main');
-        left.append(el('span', '', t.label));
-        left.append(el('span', 'txn-sub', 'Stored as ' + money(Math.abs(Number(t.amountGBP) || 0), 'GBP')));
-        li.append(left);
-        const incoming = t.amountGBP > 0;
-        li.append(el('span', incoming ? 'in' : 'out',
-          (incoming ? '+' : '-') + money(toDisplayAmount(Math.abs(t.amountGBP), cur), cur)));
-        return li;
-      });
+      renderHistory(cur);
 
       renderList($('kidGoals'), state.goals, 'No goals yet — ask an adult to set one for you! 🎯', g => goalItem(g, false));
-      renderList($('kidRewards'), state.rewards, 'Complete a goal to win your first reward! 🎁', rewardItem);
+      renderList($('kidRewards'), state.rewards, 'Complete a goal to win your first reward! 🎁', r => rewardItem(r, false));
       renderList($('adultGoals'), state.goals, 'No goals yet. Create one above.', g => goalItem(g, true));
-      renderList($('adultRewards'), state.rewards, 'No rewards earned yet.', rewardItem);
+      renderList($('adultRewards'), state.rewards, 'No rewards earned yet.', r => rewardItem(r, true));
+      renderTasks();
+      renderJars();
       renderStats(cur);
       renderSavingsJar();
       renderAchievements();
       renderChart(cur);
       renderActivityFeed();
+      renderLinkedChild();
+      renderAllowance();
+      if (document.activeElement !== $('weeklySave')) {
+        $('weeklySave').value = Math.round(toDisplayAmount(state.weeklySaveGBP, cur) * 100) / 100;
+      }
       document.querySelectorAll('[data-amount-target]').forEach(button => {
         button.textContent = money(Number(button.dataset.amount), cur);
       });
@@ -1025,8 +1651,8 @@
     /* ---------- KID ACTIONS ---------- */
     function checkAmountInSelectedCurrency(amountSelected) {
       const cur = currentCurrency();
-      if (isNaN(amountSelected) || amountSelected <= 0) return `Type an amount bigger than ${money(0, cur)}.`;
-      if (toGBP(amountSelected, cur) > state.balanceGBP + 1e-9) return `You only have ${moneyFromGBP(state.balanceGBP)}.`;
+      if (isNaN(amountSelected) || amountSelected <= 0) return `Hmm, that amount doesn’t look right. Type a number bigger than ${money(0, cur)}, like ${money(5, cur)}.`;
+      if (toGBP(amountSelected, cur) > state.balanceGBP + 1e-9) return `You only have ${moneyFromGBP(state.balanceGBP)}, so that’s a bit too much. Try a smaller amount!`;
       return '';
     }
 
@@ -1036,13 +1662,13 @@
       const payee = $('payee').value.trim();
       const amountSelected = parseFloat($('payAmount').value);
       const cur = currentCurrency();
-      if (!payee) return show(msg, 'Type who you are sending money to.', false);
+      if (!payee) return show(msg, 'Oops! Who is this for? Type a name like Sam, then press Send again.', false);
       const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
       const amountGBP = toGBP(amountSelected, cur);
       state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
       state.transactions.unshift({ label: 'Sent to ' + payee, amountGBP: -amountGBP, at: new Date().toISOString() });
-      show(msg, `Sent ${money(amountSelected, cur)} to ${payee}.`, true);
+      show(msg, `Whoosh! ${money(amountSelected, cur)} is on its way to ${payee}. 🎉`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
     });
@@ -1057,14 +1683,49 @@
       const amountGBP = toGBP(amountSelected, cur);
       state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
       state.transactions.unshift({ label: 'Cash withdrawal', amountGBP: -amountGBP, at: new Date().toISOString() });
-      show(msg, `Withdrew ${money(amountSelected, cur)}.`, true);
+      show(msg, `You took out ${money(amountSelected, cur)}. Keep it safe! 💵`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
     });
 
+    $('weeklySave').addEventListener('change', () => {
+      const msg = $('weeklyMsg');
+      const cur = currentCurrency();
+      const amount = parseFloat($('weeklySave').value);
+      if (isNaN(amount) || amount < 0) return show(msg, 'Type a number like 5 — or 0 if you can’t save right now.', false);
+      state.weeklySaveGBP = toGBP(amount, cur);
+      show(msg, `Nice! I’ll guess your goal times using ${money(amount, cur)} a week.`, true);
+      save(); renderAll();
+    });
+
+    $('jarForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = $('jarMsg');
+      const name = $('jarName').value.trim();
+      if (!name) return show(msg, 'Give your jar a name first, like “New bike”.', false);
+      if (state.jars.length >= MAX_JARS) return show(msg, `You already have ${MAX_JARS} jars — that’s plenty! Finish a wish before adding more.`, false);
+      if (state.jars.some(j => j.name.toLowerCase() === name.toLowerCase())) return show(msg, 'You already have a jar with that name. Try a different one!', false);
+      state.jars.push({ id: 'jar-' + state.nextId++, name, emoji: $('jarEmoji').value });
+      show(msg, `Your “${name}” jar is ready! Pick it on a savings goal to start filling it.`, true);
+      e.target.reset();
+      save(); renderAll();
+    });
+
+    $('profileForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = $('profileName').value.trim().slice(0, 20);
+      state.profile = { name, avatar: AVATARS.includes(pendingAvatar) ? pendingAvatar : AVATARS[0] };
+      show($('profileMsg'), name
+        ? `Looking good, ${name}! Your profile is saved.`
+        : `Profile saved! You didn’t type a name, so we’ll call you ${DEFAULT_CHILD_NAME}.`, true);
+      save(); renderAll();
+    });
+
     /* ---------- ADULT ACTIONS ---------- */
     $('goalType').addEventListener('change', () => {
-      $('targetWrap').hidden = $('goalType').value !== 'save';
+      const isSave = $('goalType').value === 'save';
+      $('targetWrap').hidden = !isSave;
+      $('dueWrap').hidden = isSave;
     });
 
     $('goalForm').addEventListener('submit', e => {
@@ -1076,23 +1737,28 @@
       const target = parseFloat($('goalTarget').value);
       const rewardValue = parseFloat($('rewardValue').value) || 0;
       const xp = Math.max(0, Math.min(500, parseInt($('rewardXp').value, 10) || 0));
+      const dueDate = type === 'task' ? $('goalDue').value : '';
 
-      if (!title) return show(msg, 'Give the goal a name.', false);
-      if (type === 'save' && (isNaN(target) || target <= 0)) return show(msg, 'Enter a target balance bigger than 0.', false);
-      if (rewardValue < 0) return show(msg, 'Gift card value can’t be negative.', false);
-      if (rewardValue === 0 && xp === 0) return show(msg, 'Add a gift card value or some XP as the reward.', false);
+      if (!title) return show(msg, 'Almost there! Give the goal a short name, like “Save for a bike”.', false);
+      if (type === 'save' && (isNaN(target) || target <= 0)) return show(msg, `Type a target amount bigger than ${money(0, cur)} so there is something to save towards.`, false);
+      if (rewardValue < 0) return show(msg, 'The gift card value can’t be below zero. Type 0 or a positive amount.', false);
+      if (rewardValue === 0 && xp === 0) return show(msg, 'Every goal needs a prize! Add a gift card value or some XP.', false);
+      if (dueDate && (!parseDateKey(dueDate) || dueDate < todayKey())) return show(msg, 'That due date has already passed. Pick today or a day in the future, or leave it empty.', false);
 
       state.goals.unshift({
         id: state.nextId++, title, type,
         targetGBP: type === 'save' ? toGBP(target, cur) : 0,
         store: $('rewardStore').value,
         rewardGBP: toGBP(rewardValue, cur),
-        xp, done: false
+        xp, done: false,
+        jarId: type === 'save' ? ($('goalJar').value || state.jars[0].id) : state.jars[0].id,
+        dueDate
       });
-      show(msg, `Goal "${title}" created!`, true);
+      show(msg, `Goal "${title}" created! Your child will see it straight away.`, true);
       e.target.reset();
       $('rewardXp').value = 50;
       $('targetWrap').hidden = false;
+      $('dueWrap').hidden = true;
       checkGoals(); save(); renderAll();
     });
 
@@ -1101,19 +1767,64 @@
       const msg = $('moneyMsg');
       const cur = currentCurrency();
       const amount = parseFloat($('moneyAmount').value);
-      if (isNaN(amount) || amount <= 0) return show(msg, `Enter an amount bigger than ${money(0, cur)}.`, false);
+      const note = $('moneyNote').value.trim().slice(0, 80);
+      if (isNaN(amount) || amount <= 0) return show(msg, `Type an amount bigger than ${money(0, cur)}, or tap a weekly preset.`, false);
       const gbp = toGBP(amount, cur);
       state.balanceGBP += gbp;
-      state.transactions.unshift({ label: pendingPocketMoney ? 'Weekly pocket money' : 'Pocket money', amountGBP: gbp, at: new Date().toISOString() });
+      const tx = { label: pendingPocketMoney ? 'Weekly pocket money' : 'Pocket money', amountGBP: gbp, at: new Date().toISOString() };
+      if (note) tx.note = note;
+      state.transactions.unshift(tx);
       pendingPocketMoney = false;
-      show(msg, `Added ${money(amount, cur)}.`, true);
+      show(msg, `Added ${money(amount, cur)} to ${childName()}'s balance${note ? ' with your message' : ''}. 🎉`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
     });
 
+    $('allowanceForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = $('allowanceMsg');
+      const cur = currentCurrency();
+      const amount = parseFloat($('allowanceAmount').value);
+      const active = $('allowanceActive').checked;
+      let next = $('allowanceNext').value;
+      if (isNaN(amount) || amount <= 0) return show(msg, `Type a weekly amount bigger than ${money(0, cur)}.`, false);
+      if (next && !parseDateKey(next)) return show(msg, 'That date doesn’t look right. Pick the day of the next payment.', false);
+      if (next && next < todayKey()) return show(msg, 'That date has already passed. Pick today or a day in the future.', false);
+      if (!next) next = addDaysKey(todayKey(), 7);
+      state.allowance = { active, amountGBP: toGBP(amount, cur), nextDue: next };
+      const paid = applyAllowance(false);
+      show(msg, paid
+        ? `Schedule saved, and ${paid} payment${paid === 1 ? ' was' : 's were'} due so ${paid === 1 ? 'it was' : 'they were'} added now.`
+        : active ? 'Schedule saved! The allowance will be added automatically on the due date.' : 'Schedule saved, but automatic payments are switched off.', true);
+      save(); renderAll();
+    });
+
+    $('allowanceNowBtn').addEventListener('click', () => {
+      const msg = $('allowanceMsg');
+      if (!(state.allowance.amountGBP > 0)) return show(msg, 'Save a weekly amount first, then you can try a payment.', false);
+      applyAllowance(true);
+      show(msg, `Demo payment of ${moneyFromGBP(state.allowance.amountGBP)} sent to ${childName()}.`, true);
+      save(); renderAll();
+    });
+
+    $('exportCsvBtn').addEventListener('click', () => {
+      try {
+        downloadCsv();
+        show($('exportMsg'), 'Report downloaded as a CSV file you can open in a spreadsheet.', true);
+      } catch (err) {
+        show($('exportMsg'), 'Sorry, the report couldn’t be created in this browser.', false);
+      }
+    });
+
     $('resetBtn').addEventListener('click', () => {
-      if (!confirm('Reset balance, goals, rewards and XP?')) return;
+      if (!confirm('Reset balance, goals, rewards, XP, jars, profile and allowance?')) return;
       state = defaultState();
+      pendingAvatar = state.profile.avatar;
+      pendingPocketMoney = false;
+      historyFilter = 'all'; historyRange = 'all'; historySearch = '';
+      $('historySearch').value = '';
+      syncFilterButtons();
+      seenAchievements.clear();
       save(); renderAll();
       toast('Everything has been reset.');
     });
@@ -1123,6 +1834,7 @@
 
     function setMode(mode) {
       const adult = mode === 'adult';
+      currentMode = adult ? 'adult' : 'kid';
       const view = adult ? $('adultView') : $('kidView');
       $('kidView').hidden = adult;
       $('adultView').hidden = !adult;
@@ -1132,8 +1844,7 @@
       setTimeout(() => view.classList.remove('view-enter'), 500);
       $('kidModeBtn').setAttribute('aria-pressed', String(!adult));
       $('adultModeBtn').setAttribute('aria-pressed', String(adult));
-      $('pageTitle').textContent = adult ? 'Adult Dashboard' : 'My Money Hub';
-      $('balanceLabel').textContent = adult ? 'Child balance' : 'You have';
+      renderProfile();
       $('pinGate').hidden = adultUnlocked;
       $('adultContent').hidden = !adultUnlocked;
       if (!adult) { adultUnlocked = false; } // lock again when going back to kid view
@@ -1172,15 +1883,29 @@
         $('moneyAmount').focus();
       });
     });
+    function syncFilterButtons() {
+      document.querySelectorAll('[data-history-filter]').forEach(tab => {
+        tab.setAttribute('aria-pressed', String(tab.dataset.historyFilter === historyFilter));
+      });
+      document.querySelectorAll('[data-history-range]').forEach(tab => {
+        tab.setAttribute('aria-pressed', String(tab.dataset.historyRange === historyRange));
+      });
+    }
     document.querySelectorAll('[data-history-filter]').forEach(button => {
       button.addEventListener('click', () => {
         historyFilter = button.dataset.historyFilter;
-        document.querySelectorAll('[data-history-filter]').forEach(tab => {
-          tab.setAttribute('aria-pressed', String(tab === button));
-        });
+        syncFilterButtons();
         renderAll();
       });
     });
+    document.querySelectorAll('[data-history-range]').forEach(button => {
+      button.addEventListener('click', () => {
+        historyRange = button.dataset.historyRange;
+        syncFilterButtons();
+        renderAll();
+      });
+    });
+    $('historySearch').addEventListener('input', e => { historySearch = e.target.value; renderAll(); });
     document.addEventListener('click', event => {
       const button = event.target.closest('button');
       if (!button) return;
@@ -1200,20 +1925,80 @@
         $('pinGate').hidden = true;
         $('adultContent').hidden = false;
       } else {
-        show($('pinMsg'), 'Wrong PIN. Try again.', false);
+        show($('pinMsg'), $('pinInput').value
+          ? 'That PIN isn’t right. Check it and try again — grown-ups know the PIN!'
+          : 'Type the grown-up PIN first, then press Unlock.', false);
       }
     }
     $('pinBtn').addEventListener('click', tryUnlock);
     $('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
+    /* ---------- ACCESSIBILITY OPTIONS + READ ALOUD ---------- */
+    $('optLarge').addEventListener('change', e => { prefs.largeText = e.target.checked; savePrefs(); applyPrefs(); });
+    $('optDyslexic').addEventListener('change', e => { prefs.dyslexic = e.target.checked; savePrefs(); applyPrefs(); });
+    $('optSound').addEventListener('change', e => {
+      prefs.sound = e.target.checked;
+      savePrefs();
+      if (prefs.sound) playChime('confetti'); // short preview, only after the child switched it on
+    });
+
+    const speechOK = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+    if (!speechOK) {
+      $('speechControls').hidden = true;
+      $('a11yMsg').textContent = 'Read-aloud isn’t available in this browser, but everything can still be read on screen.';
+    }
+    function speak(text) {
+      if (!speechOK) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 0.95;
+        window.speechSynthesis.speak(utter);
+        show($('a11yMsg'), 'Reading aloud… press “Stop reading” to stop.', true);
+      } catch (err) {
+        show($('a11yMsg'), 'Sorry, read-aloud didn’t work this time.', false);
+      }
+    }
+    function summaryText() {
+      const info = levelInfo(state.xp);
+      const tasks = state.goals.filter(g => g.type === 'task');
+      return `Hi ${childName()}! You have ${moneyFromGBP(state.balanceGBP)}. ` +
+        `You are level ${info.level}, ${info.name}, with ${state.xp} XP. ` +
+        `You have finished ${tasks.filter(g => g.done).length} of ${tasks.length} tasks.`;
+    }
+    function goalsText() {
+      const open = state.goals.filter(g => !g.done);
+      if (open.length === 0) return 'You have no open goals. Ask a grown-up to set one!';
+      return open.map(g => {
+        if (g.type === 'save') return `${g.title}. ${goalRoadmapText(g)}`;
+        const due = dueInfo(g);
+        return `Task: ${g.title}${due ? ', ' + due.spoken : ''}.`;
+      }).join(' ');
+    }
+    $('readSummaryBtn').addEventListener('click', () => speak(summaryText()));
+    $('readGoalsBtn').addEventListener('click', () => speak(goalsText()));
+    $('stopReadBtn').addEventListener('click', () => {
+      if (speechOK) window.speechSynthesis.cancel();
+      show($('a11yMsg'), 'Stopped reading.', true);
+    });
+
     currencyEl.addEventListener('change', renderAll);
+    // pay any allowance that became due while the page stayed open
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      const paid = applyAllowance(false);
+      if (paid) { save(); renderAll(); toast(`🗓️ Your weekly allowance arrived: ${moneyFromGBP(state.allowance.amountGBP * paid)}!`); }
+    });
 
     /* ---------- START ---------- */
+    applyPrefs();
     renderRateNote();
+    const allowancePaid = applyAllowance(false);
     checkGoals();
     save();
     renderAll();
     setMode('kid');
+    if (allowancePaid) toast(`🗓️ Your weekly allowance arrived: ${moneyFromGBP(state.allowance.amountGBP * allowancePaid)}!`);
     fetchLiveRates();
   </script>
 </body>
