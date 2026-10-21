@@ -1395,7 +1395,7 @@
         ? `🔥 ${streak}-day task streak! Keep it going.`
         : 'Finish a task today to start a streak 🔥';
       const order = g => (parseDateKey(g.dueDate) ? parseDateKey(g.dueDate).getTime() : Infinity);
-      const pending = tasks.filter(g => !g.done).sort((a, b) => order(a) - order(b));
+      const pending = tasks.filter(g => !g.done).sort((a, b) => (order(a) === order(b) ? 0 : order(a) < order(b) ? -1 : 1));
       renderList($('kidTasks'), pending,
         tasks.length ? 'All tasks done — brilliant! 🎉' : 'No tasks right now. Enjoy! 😎', g => goalItem(g, false));
       const overdue = pending.filter(g => dueInfo(g) && dueInfo(g).kind === 'overdue').length;
@@ -1485,6 +1485,7 @@
       const overdue = tasks.filter(g => dueInfo(g) && dueInfo(g).kind === 'overdue').length;
       const saveGoals = state.goals.filter(g => g.type === 'save');
       const a = state.allowance;
+      const streak = taskStreak();
       const metrics = [
         ['Balance', moneyFromGBP(state.balanceGBP)],
         ['Net money flow', (net >= 0 ? '+' : '-') + moneyFromGBP(Math.abs(net))],
@@ -1493,7 +1494,7 @@
         ['Most sent to', top ? `${top[0]} (${moneyFromGBP(top[1])})` : 'Nobody yet'],
         ['Tasks done', `${tasks.filter(g => g.done).length} of ${tasks.length}` + (overdue ? ` · ${overdue} overdue` : '')],
         ['Savings goals', `${saveGoals.filter(g => g.done).length} of ${saveGoals.length} reached`],
-        ['Task streak', `${taskStreak()} day${taskStreak() === 1 ? '' : 's'}`],
+        ['Task streak', `${streak} day${streak === 1 ? '' : 's'}`],
         ['Allowance', a.active && a.amountGBP > 0 ? `${moneyFromGBP(a.amountGBP)}/week` : 'Not scheduled']
       ];
       const grid = $('linkedMetrics');
@@ -1982,6 +1983,12 @@
     });
 
     currencyEl.addEventListener('change', renderAll);
+    // pay any allowance that became due while the page stayed open
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      const paid = applyAllowance(false);
+      if (paid) { save(); renderAll(); toast(`🗓️ Your weekly allowance arrived: ${moneyFromGBP(state.allowance.amountGBP * paid)}!`); }
+    });
 
     /* ---------- START ---------- */
     applyPrefs();
