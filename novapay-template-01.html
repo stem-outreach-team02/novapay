@@ -1143,11 +1143,17 @@
     $('kidModeBtn').addEventListener('click', () => setMode('kid'));
     $('adultModeBtn').addEventListener('click', () => { adultUnlocked = false; setMode('adult'); });
     $('quickSend').addEventListener('click', () => {
-      $('payForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('payForm').scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'center'
+      });
       $('payee').focus({ preventScroll: true });
     });
     $('quickWithdraw').addEventListener('click', () => {
-      $('withdrawForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('withdrawForm').scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'center'
+      });
       $('wAmount').focus({ preventScroll: true });
     });
 
