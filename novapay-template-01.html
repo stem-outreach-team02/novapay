@@ -201,9 +201,74 @@
     .pin-row > div { flex: 1; min-width: 160px; }
     .pin-row button { width: auto; margin: 0; }
 
+    .shell { max-width: 1140px; }
+    .stats-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .stat-card { background: var(--card); border: 2px solid var(--border); border-radius: 18px; padding: 14px; box-shadow: var(--shadow); }
+    .stat-card span { display: block; color: var(--muted); font-size: .86rem; font-weight: 700; }
+    .stat-card strong { display: block; color: var(--ink); font-size: clamp(1.05rem, 2vw, 1.45rem); overflow-wrap: anywhere; }
+    .quick-actions, .filter-tabs, .chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .quick-actions { margin: 0 0 18px; }
+    .quick-actions button, .chips button, .filter-tabs button { width: auto; margin: 0; }
+    .chips { margin-top: 10px; }
+    .chips button { padding: 7px 12px; font-size: .9rem; }
+    .filter-tabs { margin: 12px 0; }
+    .filter-tabs button { padding: 8px 12px; font-size: .92rem; }
+    .filter-tabs button[aria-pressed="true"] { outline: 3px solid var(--accent2); outline-offset: 2px; }
+    .chart { display: flex; align-items: end; gap: 10px; min-height: 150px; padding: 14px 4px 0; border-bottom: 2px solid var(--border); }
+    .chart-column { flex: 1; min-width: 22px; text-align: center; color: var(--muted); font-size: .75rem; }
+    .chart-bar { display: block; min-height: 4px; width: min(100%, 38px); margin: 0 auto 5px; border-radius: 8px 8px 2px 2px; background: var(--accent); transition: height .45s ease; }
+    .chart-bar.received { background: var(--good); }
+    .chart-amount { display: block; overflow-wrap: anywhere; }
+    .achievement-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; padding: 0; }
+    .achievement { display: flex; align-items: center; gap: 9px; min-height: 62px; border: 2px solid var(--border); border-radius: 16px; padding: 10px; background: var(--tint); opacity: .55; }
+    .achievement.unlocked { opacity: 1; background: var(--card); }
+    .achievement-icon { font-size: 1.7rem; }
+    .achievement.just-unlocked { animation: badge-pop .65s ease both; }
+    .jar-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .jar { position: relative; width: 104px; height: 128px; overflow: hidden; border: 5px solid var(--accent); border-radius: 18px 18px 28px 28px; background: var(--tint); }
+    .jar::before { content: ''; position: absolute; z-index: 1; top: -5px; left: 25%; width: 50%; height: 12px; border: 4px solid var(--accent); border-radius: 8px; background: var(--card); }
+    .jar-fill { position: absolute; bottom: 0; width: 100%; height: 0; background: linear-gradient(0deg, var(--accent), var(--accent2)); opacity: .8; transition: height .65s ease; }
+    .activity-feed { max-height: 340px; overflow: auto; }
+    .toast { transform: translateY(-12px); opacity: 0; transition: opacity .25s ease, transform .25s ease; }
+    .toast.toast-visible { transform: translateY(0); opacity: 1; }
+    .card { animation: card-in .45s ease both; }
+    .view-enter .card { animation: card-in .45s ease both; }
+    li.list-enter { animation: list-in .38s ease both; }
+    .giftcard { perspective: 700px; animation: gift-shimmer 2.4s ease-in-out infinite; }
+    .giftcard.revealed { animation: gift-flip .55s ease both, gift-shimmer 2.4s ease-in-out .55s infinite; }
+    button { position: relative; overflow: hidden; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(0,0,0,.2); }
+    button:active { transform: translateY(3px); }
+    .ripple { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.55); pointer-events: none; transform: scale(0); animation: ripple .55s ease-out forwards; }
+    .shake { animation: shake .35s ease; }
+    .success-pulse { animation: success-pulse .55s ease; }
+    .celebration { position: fixed; inset: 0; z-index: 20; overflow: hidden; pointer-events: none; }
+    .confetti { position: absolute; top: 45%; width: 10px; height: 15px; background: var(--confetti-color); animation: confetti-burst 1.1s ease-out forwards; }
+    @keyframes card-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes list-in { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes badge-pop { 45% { transform: scale(1.13); } 100% { transform: scale(1); } }
+    @keyframes gift-flip { 50% { transform: rotateY(90deg); } }
+    @keyframes gift-shimmer { 50% { box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 38%, transparent); } }
+    @keyframes ripple { to { transform: scale(15); opacity: 0; } }
+    @keyframes shake { 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
+    @keyframes success-pulse { 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--good) 30%, transparent); } }
+    @keyframes confetti-burst { to { transform: translate(var(--dx), var(--dy)) rotate(720deg); opacity: 0; } }
+
     @media (max-width: 780px) {
       .grid { grid-template-columns: 1fr; }
       .controls { grid-template-columns: 1fr; min-width: 220px; width: 100%; }
+      .stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats-row .stat-card:last-child { grid-column: span 2; }
+      body { padding: 16px 10px 40px; }
+    }
+    @media (max-width: 420px) {
+      .stats-row { gap: 8px; }
+      .stat-card { padding: 10px; }
+      .card { padding: 16px; }
+      .chart { gap: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
@@ -242,9 +307,22 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="celebration" id="celebration" aria-hidden="true"></div>
 
     <!-- ================= KID INTERFACE ================= -->
     <div id="kidView">
+      <section class="stats-row" aria-label="Money dashboard statistics">
+        <div class="stat-card"><span>Total sent</span><strong id="statSent">£0.00</strong></div>
+        <div class="stat-card"><span>Total withdrawn</span><strong id="statWithdrawn">£0.00</strong></div>
+        <div class="stat-card"><span>Pocket money received</span><strong id="statReceived">£0.00</strong></div>
+        <div class="stat-card"><span>Goals completed</span><strong id="statGoals">0</strong></div>
+        <div class="stat-card"><span>Rewards earned</span><strong id="statRewards">0</strong></div>
+      </section>
+      <div class="quick-actions" aria-label="Quick actions">
+        <button type="button" id="quickSend">✉️ Send money</button>
+        <button type="button" class="alt" id="quickWithdraw">💵 Withdraw cash</button>
+      </div>
+
       <section class="card">
         <h2>⭐ My level</h2>
         <div class="level-row">
@@ -264,6 +342,11 @@
           <input id="payee" type="text" placeholder="e.g. Sam" maxlength="30" autocomplete="off" />
           <label for="payAmount">How much?</label>
           <input id="payAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+          <div class="chips" aria-label="Quick send amounts">
+            <button type="button" class="small" data-amount-target="payAmount" data-amount="5">£5</button>
+            <button type="button" class="small" data-amount-target="payAmount" data-amount="10">£10</button>
+            <button type="button" class="small" data-amount-target="payAmount" data-amount="20">£20</button>
+          </div>
           <button type="submit">Send</button>
           <div class="msg" id="payMsg" role="status"></div>
         </form>
@@ -272,6 +355,11 @@
           <h2>Take out cash</h2>
           <label for="wAmount">How much?</label>
           <input id="wAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+          <div class="chips" aria-label="Quick withdrawal amounts">
+            <button type="button" class="small" data-amount-target="wAmount" data-amount="5">£5</button>
+            <button type="button" class="small" data-amount-target="wAmount" data-amount="10">£10</button>
+            <button type="button" class="small" data-amount-target="wAmount" data-amount="20">£20</button>
+          </div>
           <button type="submit" class="alt">Withdraw</button>
           <div class="msg" id="wMsg" role="status"></div>
         </form>
@@ -288,8 +376,29 @@
       </section>
 
       <section class="card">
-        <h2>History</h2>
+        <h2>🐷 Savings jar</h2>
+        <div class="jar-wrap">
+          <div class="jar" role="progressbar" aria-label="Progress toward your nearest savings goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="savingsJar"><div class="jar-fill" id="jarFill"></div></div>
+          <div><strong id="jarGoalTitle">Set a goal to fill your jar!</strong><div class="goal-meta" id="jarGoalMeta"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🏅 Achievements</h2>
+        <div class="achievement-list" id="achievements" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>History &amp; spending</h2>
+        <div class="filter-tabs" role="group" aria-label="Filter transaction history">
+          <button type="button" data-history-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-history-filter="sent" aria-pressed="false">Sent</button>
+          <button type="button" data-history-filter="received" aria-pressed="false">Received</button>
+          <button type="button" data-history-filter="withdrawals" aria-pressed="false">Withdrawals</button>
+        </div>
         <ul id="history"></ul>
+        <h3>Last 7 transactions</h3>
+        <div class="chart" id="spendingChart" role="img" aria-label="Transaction amounts for the last seven transactions"></div>
       </section>
 
       <p class="tip">Learning mode: this is pretend money and pretend gift cards for practice.</p>
@@ -321,6 +430,14 @@
               <div class="goal-meta" id="adultXpNext"></div>
             </div>
           </div>
+        </section>
+
+        <section class="stats-row" aria-label="Adult dashboard summary">
+          <div class="stat-card"><span>Balance</span><strong id="adultStatBalance">£0.00</strong></div>
+          <div class="stat-card"><span>Sent</span><strong id="adultStatSent">£0.00</strong></div>
+          <div class="stat-card"><span>Withdrawn</span><strong id="adultStatWithdrawn">£0.00</strong></div>
+          <div class="stat-card"><span>Goals completed</span><strong id="adultStatGoals">0</strong></div>
+          <div class="stat-card"><span>Rewards</span><strong id="adultStatRewards">0</strong></div>
         </section>
 
         <section class="grid grid-wrap">
@@ -365,6 +482,11 @@
               <h2>💷 Give pocket money</h2>
               <label for="moneyAmount">Amount</label>
               <input id="moneyAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+              <div class="chips" aria-label="Weekly pocket money presets">
+                <button type="button" class="small" data-weekly-amount="5">Add £5 weekly</button>
+                <button type="button" class="small" data-weekly-amount="10">Add £10 weekly</button>
+                <button type="button" class="small" data-weekly-amount="20">Add £20 weekly</button>
+              </div>
               <button type="submit" class="alt">Add to balance</button>
               <div class="msg" id="moneyMsg" role="status"></div>
             </form>
@@ -384,6 +506,10 @@
         <section class="card">
           <h2>🎁 Rewards earned</h2>
           <ul id="adultRewards"></ul>
+        </section>
+        <section class="card">
+          <h2>📣 Activity feed</h2>
+          <ul class="activity-feed" id="activityFeed" aria-live="polite"></ul>
         </section>
       </div>
     </div>
@@ -510,8 +636,33 @@
       const t = $('toast');
       t.textContent = text;
       t.hidden = false;
+      requestAnimationFrame(() => t.classList.add('toast-visible'));
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
+      toastTimer = setTimeout(() => {
+        t.classList.remove('toast-visible');
+        setTimeout(() => { t.hidden = true; }, 260);
+      }, 6000);
+    }
+
+    function celebrate() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const layer = $('celebration');
+      const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c77dff'];
+      layer.replaceChildren();
+      for (let i = 0; i < 30; i++) {
+        const bit = el('span', 'confetti');
+        bit.style.left = '50%';
+        bit.style.setProperty('--dx', `${Math.round(Math.random() * 460 - 230)}px`);
+        bit.style.setProperty('--dy', `${Math.round(Math.random() * 420 - 210)}px`);
+        bit.style.setProperty('--confetti-color', colors[i % colors.length]);
+        layer.append(bit);
+      }
+      document.querySelectorAll('.level-badge').forEach(badge => {
+        badge.classList.remove('just-unlocked');
+        void badge.offsetWidth;
+        badge.classList.add('just-unlocked');
+      });
+      setTimeout(() => layer.replaceChildren(), 1200);
     }
 
     function makeCode() {
@@ -541,6 +692,7 @@
       let text = `🎉 Goal complete: "${goal.title}"! +${goal.xp} XP`;
       if (goal.rewardGBP > 0) text += ` and a ${goal.store} gift card (${moneyFromGBP(goal.rewardGBP)})!`;
       if (after > before) text += ` ⭐ LEVEL UP — you're now level ${after}!`;
+      celebrate();
       toast(text);
     }
 
@@ -624,9 +776,26 @@
       box.style.width = '100%';
       box.append(el('div', '', `🎁 ${r.store} gift card — ${moneyFromGBP(r.valueGBP)}`));
       const code = el('div', '', 'Code: ');
-      code.append(el('span', 'code', r.code));
+      const codeValue = el('span', 'code', r.code);
+      codeValue.hidden = true;
+      code.append(codeValue);
       box.append(code);
       box.append(el('div', 'goal-meta', `Earned for: ${r.goalTitle} (pretend gift card)`));
+      const reveal = el('button', 'small', 'Reveal code');
+      reveal.type = 'button';
+      reveal.setAttribute('aria-expanded', 'false');
+      reveal.addEventListener('click', () => {
+        const visible = !codeValue.hidden;
+        codeValue.hidden = visible;
+        reveal.textContent = visible ? 'Reveal code' : 'Hide code';
+        reveal.setAttribute('aria-expanded', String(!visible));
+        if (!visible) {
+          box.classList.remove('revealed');
+          void box.offsetWidth;
+          box.classList.add('revealed');
+        }
+      });
+      box.append(reveal);
       li.append(box);
       return li;
     }
@@ -637,30 +806,186 @@
       $(prefix + 'Level').textContent = info.level;
       $(prefix + 'LevelName').textContent = info.name;
       $(prefix + 'Xp').textContent = state.xp + ' XP';
-      $(prefix + 'XpFill').style.width = info.pct + '%';
+      const fill = $(prefix + 'XpFill');
+      fill.style.width = info.pct + '%';
+      const bar = fill.parentElement;
+      bar.setAttribute('role', 'progressbar');
+      bar.setAttribute('aria-label', 'XP progress to next level');
+      bar.setAttribute('aria-valuemin', '0');
+      bar.setAttribute('aria-valuemax', '100');
+      bar.setAttribute('aria-valuenow', String(Math.round(info.pct)));
       $(prefix + 'XpNext').textContent =
         `${info.into} / ${info.need} XP this level · ${info.toNext} XP to level ${info.level + 1}`;
-      if (prefix === 'kid') $('kidXpBar').setAttribute('aria-valuenow', String(Math.round(info.pct)));
     }
 
     function renderList(ul, items, emptyText, build) {
       ul.innerHTML = '';
-      if (items.length === 0) { ul.append(el('li', '', emptyText)); return; }
-      items.forEach(i => ul.append(build(i)));
+      if (items.length === 0) {
+        ul.append(el('li', 'list-enter', emptyText));
+        return;
+      }
+      items.forEach(i => {
+        const item = build(i);
+        item.classList.add('list-enter');
+        ul.append(item);
+      });
+    }
+
+    let historyFilter = 'all';
+    let lastBalanceGBP = null;
+    let lastBalanceCurrency = null;
+    let balanceDisplayValue = null;
+    let balanceFrame = 0;
+    const achievements = [
+      { id: 'first-send', icon: '✉️', name: 'First Send', unlocked: () => state.transactions.some(t => /^Sent to /.test(t.label)) },
+      { id: 'first-goal', icon: '🎯', name: 'First Goal', unlocked: () => state.goals.some(g => g.done) },
+      { id: 'level-three', icon: '⭐', name: 'Level 3', unlocked: () => levelInfo(state.xp).level >= 3 },
+      { id: 'saver', icon: '🐷', name: 'Saver', unlocked: () => state.balanceGBP >= 1000 }
+    ];
+    const seenAchievements = new Set();
+
+    function transactionKind(transaction) {
+      if (/^Sent to /.test(transaction.label)) return 'sent';
+      if (/withdrawal/i.test(transaction.label)) return 'withdrawals';
+      return 'received';
+    }
+
+    function renderAchievements() {
+      const list = $('achievements');
+      list.replaceChildren();
+      achievements.forEach(achievement => {
+        const unlocked = achievement.unlocked();
+        const badge = el('div', 'achievement' + (unlocked ? ' unlocked' : ''));
+        badge.setAttribute('aria-label', `${achievement.name}: ${unlocked ? 'unlocked' : 'locked'}`);
+        badge.append(el('span', 'achievement-icon', achievement.icon));
+        badge.append(el('strong', '', achievement.name));
+        if (unlocked && !seenAchievements.has(achievement.id)) {
+          badge.classList.add('just-unlocked');
+          seenAchievements.add(achievement.id);
+        }
+        list.append(badge);
+      });
+    }
+
+    function renderStats(cur) {
+      const total = kind => state.transactions
+        .filter(transaction => transactionKind(transaction) === kind)
+        .reduce((sum, transaction) => sum + Math.abs(Number(transaction.amountGBP) || 0), 0);
+      const sent = total('sent');
+      const withdrawn = total('withdrawals');
+      const received = total('received');
+      const completed = state.goals.filter(goal => goal.done).length;
+      const rewards = state.rewards.length;
+      $('statSent').textContent = money(toDisplayAmount(sent, cur), cur);
+      $('statWithdrawn').textContent = money(toDisplayAmount(withdrawn, cur), cur);
+      $('statReceived').textContent = money(toDisplayAmount(received, cur), cur);
+      $('statGoals').textContent = completed;
+      $('statRewards').textContent = rewards;
+      $('adultStatBalance').textContent = money(toDisplayAmount(state.balanceGBP, cur), cur);
+      $('adultStatSent').textContent = money(toDisplayAmount(sent, cur), cur);
+      $('adultStatWithdrawn').textContent = money(toDisplayAmount(withdrawn, cur), cur);
+      $('adultStatGoals').textContent = completed;
+      $('adultStatRewards').textContent = rewards;
+    }
+
+    function renderSavingsJar() {
+      const goal = state.goals
+        .filter(item => !item.done && item.type === 'save' && Number(item.targetGBP) > 0)
+        .sort((a, b) => a.targetGBP - b.targetGBP)[0];
+      const jar = $('savingsJar');
+      if (!goal) {
+        $('jarGoalTitle').textContent = 'Set a goal to fill your jar!';
+        $('jarGoalMeta').textContent = 'Your savings progress will appear here.';
+        $('jarFill').style.height = '0%';
+        jar.setAttribute('aria-valuenow', '0');
+        return;
+      }
+      const pct = Math.max(0, Math.min(100, state.balanceGBP / goal.targetGBP * 100));
+      $('jarGoalTitle').textContent = goal.title;
+      $('jarGoalMeta').textContent = `${moneyFromGBP(state.balanceGBP)} of ${moneyFromGBP(goal.targetGBP)} · ${Math.round(pct)}%`;
+      $('jarFill').style.height = pct + '%';
+      jar.setAttribute('aria-valuenow', String(Math.round(pct)));
+    }
+
+    function renderChart(cur) {
+      const chart = $('spendingChart');
+      chart.replaceChildren();
+      const transactions = state.transactions.slice(0, 7).reverse();
+      if (transactions.length === 0) {
+        chart.append(el('span', 'goal-meta', 'No transactions to chart yet.'));
+        return;
+      }
+      const maxAmount = Math.max(...transactions.map(t => Math.abs(Number(t.amountGBP) || 0)), 1);
+      transactions.forEach(transaction => {
+        const column = el('div', 'chart-column');
+        const amount = Math.abs(Number(transaction.amountGBP) || 0);
+        const kind = transactionKind(transaction);
+        const bar = el('span', 'chart-bar' + (transaction.amountGBP > 0 ? ' received' : ''));
+        bar.style.height = Math.max(4, amount / maxAmount * 96) + 'px';
+        bar.title = `${transaction.label}: ${money(toDisplayAmount(amount, cur), cur)}`;
+        column.append(bar);
+        column.append(el('span', 'chart-amount', money(toDisplayAmount(amount, cur), cur)));
+        column.append(el('span', '', kind === 'sent' ? 'Sent' : kind === 'withdrawals' ? 'Cash' : 'In'));
+        chart.append(column);
+      });
+    }
+
+    function renderActivityFeed() {
+      const activities = [
+        ...state.transactions.map(transaction => ({
+          at: transaction.at || '',
+          label: `${transaction.label} · ${moneyFromGBP(Math.abs(Number(transaction.amountGBP) || 0))}`
+        })),
+        ...state.goals.filter(goal => goal.done).map(goal => ({
+          at: goal.doneAt || '',
+          label: `Completed goal: ${goal.title}`
+        }))
+      ].sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 12);
+      renderList($('activityFeed'), activities, 'No activity yet.', activity => {
+        const item = el('li', '');
+        item.append(el('span', '', activity.label));
+        item.append(el('span', 'txn-sub', activity.at ? new Date(activity.at).toLocaleDateString() : 'Earlier'));
+        return item;
+      });
     }
 
     function renderAll() {
       const cur = currentCurrency();
-      $('balance').textContent = money(toDisplayAmount(state.balanceGBP, cur), cur);
+      const balance = $('balance');
+      const target = toDisplayAmount(state.balanceGBP, cur);
+      const animate = lastBalanceGBP !== null && lastBalanceGBP !== state.balanceGBP &&
+        lastBalanceCurrency === cur && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (balanceFrame) cancelAnimationFrame(balanceFrame);
+      if (animate) {
+        const from = balanceDisplayValue === null ? toDisplayAmount(lastBalanceGBP, cur) : balanceDisplayValue;
+        const started = performance.now();
+        const tick = now => {
+          const progress = Math.min(1, (now - started) / 550);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          balanceDisplayValue = from + (target - from) * eased;
+          balance.textContent = money(balanceDisplayValue, cur);
+          if (progress < 1) balanceFrame = requestAnimationFrame(tick);
+          else balanceFrame = 0;
+        };
+        balanceFrame = requestAnimationFrame(tick);
+      } else {
+        balanceDisplayValue = target;
+        balance.textContent = money(target, cur);
+      }
+      lastBalanceGBP = state.balanceGBP;
+      lastBalanceCurrency = cur;
 
       renderLevel('kid');
       renderLevel('adult');
 
-      renderList($('history'), state.transactions, 'Nothing yet — make your first move.', t => {
+      const filteredTransactions = historyFilter === 'all'
+        ? state.transactions
+        : state.transactions.filter(transaction => transactionKind(transaction) === historyFilter);
+      renderList($('history'), filteredTransactions, 'Nothing yet — make your first move.', t => {
         const li = el('li', '');
         const left = el('div', 'txn-main');
         left.append(el('span', '', t.label));
-        left.append(el('span', 'txn-sub', 'Stored as ' + money(Math.abs(t.amountGBP), 'GBP')));
+        left.append(el('span', 'txn-sub', 'Stored as ' + money(Math.abs(Number(t.amountGBP) || 0), 'GBP')));
         li.append(left);
         const incoming = t.amountGBP > 0;
         li.append(el('span', incoming ? 'in' : 'out',
@@ -672,11 +997,29 @@
       renderList($('kidRewards'), state.rewards, 'Complete a goal to win your first reward! 🎁', rewardItem);
       renderList($('adultGoals'), state.goals, 'No goals yet. Create one above.', g => goalItem(g, true));
       renderList($('adultRewards'), state.rewards, 'No rewards earned yet.', rewardItem);
+      renderStats(cur);
+      renderSavingsJar();
+      renderAchievements();
+      renderChart(cur);
+      renderActivityFeed();
+      document.querySelectorAll('[data-amount-target]').forEach(button => {
+        button.textContent = money(Number(button.dataset.amount), cur);
+      });
+      document.querySelectorAll('[data-weekly-amount]').forEach(button => {
+        button.textContent = `Weekly preset ${money(Number(button.dataset.weeklyAmount), cur)}`;
+      });
     }
 
     function show(elm, text, ok) {
       elm.textContent = text;
       elm.className = 'msg ' + (ok ? 'ok' : 'err');
+      const target = elm.closest('form') || elm.closest('.card');
+      if (target && text) {
+        target.classList.remove('shake', 'success-pulse');
+        void target.offsetWidth;
+        target.classList.add(ok ? 'success-pulse' : 'shake');
+        setTimeout(() => target.classList.remove('shake', 'success-pulse'), 600);
+      }
     }
 
     /* ---------- KID ACTIONS ---------- */
@@ -698,7 +1041,7 @@
       if (problem) return show(msg, problem, false);
       const amountGBP = toGBP(amountSelected, cur);
       state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
-      state.transactions.unshift({ label: 'Sent to ' + payee, amountGBP: -amountGBP });
+      state.transactions.unshift({ label: 'Sent to ' + payee, amountGBP: -amountGBP, at: new Date().toISOString() });
       show(msg, `Sent ${money(amountSelected, cur)} to ${payee}.`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
@@ -713,7 +1056,7 @@
       if (problem) return show(msg, problem, false);
       const amountGBP = toGBP(amountSelected, cur);
       state.balanceGBP = Math.max(0, state.balanceGBP - amountGBP);
-      state.transactions.unshift({ label: 'Cash withdrawal', amountGBP: -amountGBP });
+      state.transactions.unshift({ label: 'Cash withdrawal', amountGBP: -amountGBP, at: new Date().toISOString() });
       show(msg, `Withdrew ${money(amountSelected, cur)}.`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
@@ -761,7 +1104,8 @@
       if (isNaN(amount) || amount <= 0) return show(msg, `Enter an amount bigger than ${money(0, cur)}.`, false);
       const gbp = toGBP(amount, cur);
       state.balanceGBP += gbp;
-      state.transactions.unshift({ label: 'Pocket money', amountGBP: gbp });
+      state.transactions.unshift({ label: pendingPocketMoney ? 'Weekly pocket money' : 'Pocket money', amountGBP: gbp, at: new Date().toISOString() });
+      pendingPocketMoney = false;
       show(msg, `Added ${money(amount, cur)}.`, true);
       e.target.reset();
       checkGoals(); save(); renderAll();
@@ -779,8 +1123,13 @@
 
     function setMode(mode) {
       const adult = mode === 'adult';
+      const view = adult ? $('adultView') : $('kidView');
       $('kidView').hidden = adult;
       $('adultView').hidden = !adult;
+      view.classList.remove('view-enter');
+      void view.offsetWidth;
+      view.classList.add('view-enter');
+      setTimeout(() => view.classList.remove('view-enter'), 500);
       $('kidModeBtn').setAttribute('aria-pressed', String(!adult));
       $('adultModeBtn').setAttribute('aria-pressed', String(adult));
       $('pageTitle').textContent = adult ? 'Adult Dashboard' : 'My Money Hub';
@@ -793,6 +1142,49 @@
 
     $('kidModeBtn').addEventListener('click', () => setMode('kid'));
     $('adultModeBtn').addEventListener('click', () => { adultUnlocked = false; setMode('adult'); });
+    $('quickSend').addEventListener('click', () => {
+      $('payForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('payee').focus({ preventScroll: true });
+    });
+    $('quickWithdraw').addEventListener('click', () => {
+      $('withdrawForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('wAmount').focus({ preventScroll: true });
+    });
+
+    document.querySelectorAll('[data-amount-target]').forEach(button => {
+      button.addEventListener('click', () => {
+        const input = $(button.dataset.amountTarget);
+        input.value = button.dataset.amount;
+        input.focus();
+      });
+    });
+    let pendingPocketMoney = false;
+    document.querySelectorAll('[data-weekly-amount]').forEach(button => {
+      button.addEventListener('click', () => {
+        $('moneyAmount').value = button.dataset.weeklyAmount;
+        pendingPocketMoney = true;
+        $('moneyAmount').focus();
+      });
+    });
+    document.querySelectorAll('[data-history-filter]').forEach(button => {
+      button.addEventListener('click', () => {
+        historyFilter = button.dataset.historyFilter;
+        document.querySelectorAll('[data-history-filter]').forEach(tab => {
+          tab.setAttribute('aria-pressed', String(tab === button));
+        });
+        renderAll();
+      });
+    });
+    document.addEventListener('click', event => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      const ripple = el('span', 'ripple');
+      const rect = button.getBoundingClientRect();
+      ripple.style.left = `${(event.clientX || rect.left + rect.width / 2) - rect.left}px`;
+      ripple.style.top = `${(event.clientY || rect.top + rect.height / 2) - rect.top}px`;
+      button.append(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+    });
 
     function tryUnlock() {
       if ($('pinInput').value === ADULT_PIN) {
