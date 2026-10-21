@@ -3,117 +3,245 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaPay — Pay & Withdraw</title>
+  <title>NovaPay — My Money Hub</title>
   <style>
-    :root {
-      --bg: #f4f5f9; --card: #fff; --ink: #1a1d29; --text: #374151;
-      --muted: #5b6270; --border: #d8dce6; --accent: #5a50e0;
-      --tint: #eeedfb; --good: #15803d; --bad: #b91c1c;
-      --shadow: 0 12px 30px rgba(26,29,41,.08); --radius: 20px;
+    /* ---------- THEMES (10 kid-friendly options) ---------- */
+    :root, [data-theme="galaxy"] {
+      --bg1:#ffffff; --bg2:#e9e6ff; --card:#ffffff; --ink:#2b2370; --text:#3d3a5c; --muted:#5f5c80;
+      --border:#cfc9ff; --accent:#5a50e0; --accent2:#2b2370; --on-accent:#ffffff; --tint:#eeedfb;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(43,35,112,.14);
     }
+    [data-theme="ocean"] {
+      --bg1:#f0fbff; --bg2:#bfe9f7; --card:#ffffff; --ink:#05466b; --text:#1f4f66; --muted:#46697b;
+      --border:#9fd6ea; --accent:#0a6fa8; --accent2:#05466b; --on-accent:#ffffff; --tint:#e0f4fb;
+      --good:#0f6b3a; --bad:#b4232a; --shadow:0 10px 26px rgba(5,70,107,.16);
+    }
+    [data-theme="jungle"] {
+      --bg1:#f3fbe9; --bg2:#c9ebb0; --card:#ffffff; --ink:#1f4d17; --text:#2f4f2a; --muted:#52704c;
+      --border:#b4dc98; --accent:#2f7d1f; --accent2:#1f4d17; --on-accent:#ffffff; --tint:#e6f5d6;
+      --good:#17651f; --bad:#b4232a; --shadow:0 10px 26px rgba(31,77,23,.16);
+    }
+    [data-theme="candy"] {
+      --bg1:#fff5fa; --bg2:#ffc9e1; --card:#ffffff; --ink:#8a1250; --text:#6b2a4b; --muted:#85506b;
+      --border:#ffb3d3; --accent:#d6297a; --accent2:#8a1250; --on-accent:#ffffff; --tint:#ffe3f0;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(138,18,80,.16);
+    }
+    [data-theme="sunset"] {
+      --bg1:#fff8ee; --bg2:#ffd2a1; --card:#ffffff; --ink:#8a3a05; --text:#5f3a1f; --muted:#7d5a3f;
+      --border:#ffc98f; --accent:#d4560a; --accent2:#8a3a05; --on-accent:#ffffff; --tint:#ffeacf;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(138,58,5,.18);
+    }
+    [data-theme="space"] {
+      --bg1:#1b1f4a; --bg2:#0a0c24; --card:#20255c; --ink:#ffffff; --text:#e3e6ff; --muted:#b4b9e6;
+      --border:#4a50a8; --accent:#ffd23f; --accent2:#ff7a59; --on-accent:#1b1f4a; --tint:#2c3280;
+      --good:#7dffb0; --bad:#ff9a9a; --shadow:0 10px 26px rgba(0,0,0,.45);
+    }
+    [data-theme="unicorn"] {
+      --bg1:#fdf4ff; --bg2:#e3d2ff; --card:#ffffff; --ink:#6a22a8; --text:#58407a; --muted:#765e99;
+      --border:#dcc2ff; --accent:#9a3fd6; --accent2:#c2257f; --on-accent:#ffffff; --tint:#f3e6ff;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(106,34,168,.16);
+    }
+    [data-theme="dino"] {
+      --bg1:#fbf7e6; --bg2:#d9d29a; --card:#fffdf2; --ink:#4a4a0f; --text:#4d4a2a; --muted:#6c6942;
+      --border:#d6cf8a; --accent:#5f7a14; --accent2:#4a4a0f; --on-accent:#ffffff; --tint:#f1edc4;
+      --good:#17651f; --bad:#a8231f; --shadow:0 10px 26px rgba(74,74,15,.18);
+    }
+    [data-theme="robot"] {
+      --bg1:#eef3f6; --bg2:#b9c7d1; --card:#ffffff; --ink:#1f2f3a; --text:#2d3f4b; --muted:#506571;
+      --border:#a9bac5; --accent:#0e7c86; --accent2:#1f2f3a; --on-accent:#ffffff; --tint:#dfeaf0;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(31,47,58,.18);
+    }
+    [data-theme="rainbow"] {
+      --bg1:#fffef5; --bg2:#d6f0ff; --card:#ffffff; --ink:#2a2a5a; --text:#3d3d66; --muted:#5a5a80;
+      --border:#c8d4ff; --accent:#e0457b; --accent2:#2a7fd4; --on-accent:#ffffff; --tint:#fff0c9;
+      --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(42,42,90,.16);
+    }
+
     * { box-sizing: border-box; }
     body {
-      margin: 0; padding: 32px 16px 48px; color: var(--text); line-height: 1.5;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #fff 0%, var(--bg) 45%, #edf0f7 100%);
+      margin: 0; padding: 24px 14px 56px; color: var(--text); line-height: 1.55; font-size: 1.05rem;
+      font-family: 'Trebuchet MS', 'Comic Sans MS', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, var(--bg1) 0%, var(--bg2) 100%);
+      background-attachment: fixed; min-height: 100vh; transition: background .3s;
     }
     .shell { max-width: 980px; margin: 0 auto; }
     .card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
+      background: var(--card); border: 3px solid var(--border);
+      border-radius: 26px; box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
     }
-    h1, h2, h3 { margin: 0 0 8px; color: var(--ink); }
-    .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: .78rem; font-weight: 700; color: var(--accent); }
-    .top-row { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; }
-    .balance { font-size: 3rem; font-weight: 800; color: var(--ink); margin: 6px 0 0; }
-    .currency-wrap { min-width: 220px; }
-    .currency-wrap label { margin: 0 0 4px; }
-    .rate-note { margin-top: 6px; font-size: .88rem; color: var(--muted); min-height: 1.2em; }
+    h1, h2 { margin: 0 0 8px; color: var(--ink); }
+    h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+    h2 { font-size: 1.45rem; }
+    .eyebrow {
+      display: inline-block; background: var(--accent); color: var(--on-accent);
+      padding: 4px 14px; border-radius: 999px; font-weight: 800; font-size: .85rem; letter-spacing: .06em; margin-bottom: 8px;
+    }
+    .top-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+    .balance-label { font-weight: 700; color: var(--muted); }
+    .balance { font-size: clamp(2.6rem, 9vw, 3.6rem); font-weight: 900; color: var(--ink); margin: 2px 0 0; }
+    .coin { display: inline-block; animation: bob 2.4s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @media (prefers-reduced-motion: reduce) { .coin { animation: none; } body { transition: none; } }
 
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0; }
-    label { display: block; font-weight: 600; margin: 12px 0 4px; color: var(--ink); }
-    input, select {
-      width: 100%; padding: 10px 12px; font-size: 1rem;
-      border: 1px solid var(--border); border-radius: 12px; background: #fff;
+    .currency-wrap { min-width: 230px; }
+    .rate-note { margin-top: 6px; font-size: .9rem; color: var(--muted); min-height: 1.2em; }
+
+    /* theme picker */
+    .themes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+    button.theme-btn {
+      margin: 0; padding: 10px 6px; font-size: .95rem; font-weight: 800; color: var(--ink);
+      background: var(--tint); border: 3px solid var(--border); border-radius: 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
     }
-    input:focus, select:focus { outline: 2px solid var(--accent); }
+    button.theme-btn .em { font-size: 1.6rem; line-height: 1; }
+    button.theme-btn[aria-pressed="true"] { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 3px var(--accent); }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid .card { margin-bottom: 0; }
+    .grid-wrap { margin-bottom: 18px; }
+    label { display: block; font-weight: 800; margin: 12px 0 5px; color: var(--ink); }
+    input, select {
+      width: 100%; padding: 12px 14px; font-size: 1.1rem; font-family: inherit;
+      color: #1a1a2e; border: 3px solid var(--border); border-radius: 16px; background: #fff;
+    }
+    input:focus, select:focus, button:focus-visible { outline: 4px solid var(--accent2); outline-offset: 2px; }
 
     button {
-      margin-top: 14px; width: 100%; padding: 12px; font-size: 1rem; font-weight: 700;
-      color: #fff; background: var(--accent); border: 0; border-radius: 12px; cursor: pointer;
+      margin-top: 14px; width: 100%; padding: 14px; font-size: 1.15rem; font-weight: 900; font-family: inherit;
+      color: var(--on-accent); background: var(--accent); border: 0; border-radius: 18px; cursor: pointer;
+      box-shadow: 0 5px 0 rgba(0,0,0,.2); transition: transform .08s, box-shadow .08s;
     }
-    button:hover { filter: brightness(1.1); }
-    button.alt { background: var(--ink); }
+    button:hover { filter: brightness(1.08); }
+    button:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+    button.alt { background: var(--accent2); }
+    [data-theme="space"] button.alt { color: #fff; }
+    button.theme-btn { box-shadow: none; }
+    button.theme-btn:active { transform: none; }
 
-    .msg { min-height: 1.4em; margin-top: 10px; font-weight: 600; }
+    .msg { min-height: 1.5em; margin-top: 10px; font-weight: 800; }
     .msg.ok { color: var(--good); }
     .msg.err { color: var(--bad); }
 
     ul { list-style: none; margin: 10px 0 0; padding: 0; }
     li {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; background: var(--tint); border-radius: 12px; margin-bottom: 8px;
-      gap: 12px;
+      padding: 12px 14px; background: var(--tint); border-radius: 18px; margin-bottom: 10px; gap: 12px;
+      color: var(--text); font-weight: 700;
     }
     .txn-main { display: flex; flex-direction: column; }
-    .txn-sub { font-size: .83rem; color: var(--muted); }
-    .out { color: var(--bad); font-weight: 700; }
+    .txn-sub { font-size: .85rem; color: var(--muted); font-weight: 600; }
+    .out { color: var(--bad); font-weight: 900; white-space: nowrap; }
+
+    .tip { background: var(--tint); border-radius: 18px; padding: 12px 14px; font-weight: 700; color: var(--text); }
 
     @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr; }
-      .balance { font-size: 2.4rem; }
+      .themes { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
   <main class="shell">
     <section class="card">
-      <div class="eyebrow">NovaPay</div>
+      <div class="eyebrow">⭐ NovaPay</div>
       <div class="top-row">
         <div>
-          <h1>My Account</h1>
-          <div>Available balance</div>
-          <div class="balance" id="balance">£500.00</div>
+          <h1>My Money Hub</h1>
+          <div class="balance-label">You have</div>
+          <div class="balance"><span class="coin" aria-hidden="true">🪙</span> <span id="balance">£500.00</span></div>
         </div>
         <div class="currency-wrap">
-          <label for="currency">Display currency</label>
+          <label for="currency">🌍 Pick your money type</label>
           <select id="currency" aria-label="Choose currency">
-            <option value="GBP" selected>GBP (£)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="USD">USD ($)</option>
+            <option value="GBP" selected>£ Pounds (GBP)</option>
+            <option value="EUR">€ Euros (EUR)</option>
+            <option value="USD">$ Dollars (USD)</option>
           </select>
-          <div class="rate-note" id="rateNote">Loading live exchange rates…</div>
+          <div class="rate-note" id="rateNote">Loading today's exchange rates…</div>
         </div>
       </div>
     </section>
 
-    <section class="grid">
+    <section class="card" aria-labelledby="themeTitle">
+      <h2 id="themeTitle">🎨 Pick your theme</h2>
+      <div class="themes" id="themes" role="group" aria-label="Theme choices"></div>
+    </section>
+
+    <section class="grid grid-wrap">
       <form class="card" id="payForm">
-        <h2>Pay someone</h2>
-        <label for="payee">Who are you paying?</label>
-        <input id="payee" type="text" placeholder="e.g. Sam" />
-        <label for="payAmount">Amount</label>
-        <input id="payAmount" type="number" step="0.01" placeholder="0.00" />
-        <button type="submit">Pay</button>
+        <h2>💸 Send money</h2>
+        <label for="payee">Who are you sending it to?</label>
+        <input id="payee" type="text" placeholder="e.g. Sam" maxlength="30" autocomplete="off" />
+        <label for="payAmount">How much?</label>
+        <input id="payAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+        <button type="submit">Send it! 🚀</button>
         <div class="msg" id="payMsg" role="status"></div>
       </form>
 
       <form class="card" id="withdrawForm">
-        <h2>Withdraw cash</h2>
-        <label for="wAmount">Amount</label>
-        <input id="wAmount" type="number" step="0.01" placeholder="0.00" />
-        <button type="submit" class="alt">Withdraw</button>
+        <h2>🏧 Take out cash</h2>
+        <label for="wAmount">How much?</label>
+        <input id="wAmount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+        <button type="submit" class="alt">Take it out! 💰</button>
         <div class="msg" id="wMsg" role="status"></div>
       </form>
     </section>
 
     <section class="card">
-      <h2>History</h2>
-      <ul id="history"><li>No transactions yet</li></ul>
+      <h2>📒 My money story</h2>
+      <ul id="history"><li>Nothing yet — make your first move! 🌟</li></ul>
     </section>
+
+    <p class="tip">🧠 Fun fact: this is pretend money for learning. Real banks always check with a grown-up first!</p>
   </main>
 
   <script>
+    /* ---------- THEMES ---------- */
+    const THEMES = [
+      { id: 'galaxy',  name: 'Galaxy',  emoji: '🌌' },
+      { id: 'ocean',   name: 'Ocean',   emoji: '🐬' },
+      { id: 'jungle',  name: 'Jungle',  emoji: '🦜' },
+      { id: 'candy',   name: 'Candy',   emoji: '🍭' },
+      { id: 'sunset',  name: 'Sunset',  emoji: '🌅' },
+      { id: 'space',   name: 'Space',   emoji: '🚀' },
+      { id: 'unicorn', name: 'Unicorn', emoji: '🦄' },
+      { id: 'dino',    name: 'Dino',    emoji: '🦕' },
+      { id: 'robot',   name: 'Robot',   emoji: '🤖' },
+      { id: 'rainbow', name: 'Rainbow', emoji: '🌈' }
+    ];
+
+    const themesEl = document.getElementById('themes');
+
+    function applyTheme(id) {
+      if (!THEMES.some(t => t.id === id)) id = 'galaxy';
+      document.documentElement.setAttribute('data-theme', id);
+      themesEl.querySelectorAll('button').forEach(b =>
+        b.setAttribute('aria-pressed', String(b.dataset.theme === id)));
+      try { localStorage.setItem('novapay-theme', id); } catch (e) {}
+    }
+
+    THEMES.forEach(t => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'theme-btn';
+      b.dataset.theme = t.id;
+      b.setAttribute('aria-pressed', 'false');
+      const em = document.createElement('span');
+      em.className = 'em';
+      em.setAttribute('aria-hidden', 'true');
+      em.textContent = t.emoji;
+      const nm = document.createElement('span');
+      nm.textContent = t.name;
+      b.append(em, nm);
+      b.addEventListener('click', () => applyTheme(t.id));
+      themesEl.appendChild(b);
+    });
+
+    let savedTheme = 'galaxy';
+    try { savedTheme = localStorage.getItem('novapay-theme') || 'galaxy'; } catch (e) {}
+    applyTheme(savedTheme);
+
+    /* ---------- MONEY ---------- */
     // Canonical account currency is GBP. We convert only for display/input.
     let balanceGBP = 500;
     const transactions = []; // stored as GBP for accuracy
@@ -123,66 +251,48 @@
     const historyEl = document.getElementById('history');
     const rateNoteEl = document.getElementById('rateNote');
 
-    // Fallback rates so app still works if API fails.
+    // Fallback rates so the app still works if the API fails.
     let rates = { GBP: 1, EUR: 1.17, USD: 1.31 };
     let usingLiveRates = false;
 
     const symbols = { GBP: '£', EUR: '€', USD: '$' };
 
-    function currentCurrency() {
-      return currencyEl.value;
-    }
-
-    function toDisplayAmount(gbpAmount, currency) {
-      return gbpAmount * rates[currency];
-    }
-
-    function toGBP(amountInSelectedCurrency, currency) {
-      return amountInSelectedCurrency / rates[currency];
-    }
-
-    function money(amount, currency = currentCurrency()) {
-      return symbols[currency] + amount.toFixed(2);
-    }
+    function currentCurrency() { return currencyEl.value; }
+    function toDisplayAmount(gbp, cur) { return gbp * rates[cur]; }
+    function toGBP(amount, cur) { return amount / rates[cur]; }
+    function money(amount, cur = currentCurrency()) { return symbols[cur] + amount.toFixed(2); }
 
     function renderRateNote() {
       if (usingLiveRates) {
-        rateNoteEl.textContent = `Live rates loaded (base GBP): 1 GBP = ${rates.EUR.toFixed(4)} EUR, ${rates.USD.toFixed(4)} USD`;
+        rateNoteEl.textContent = `Today's rates: £1 = €${rates.EUR.toFixed(4)} = $${rates.USD.toFixed(4)}`;
       } else {
-        rateNoteEl.textContent = 'Using fallback rates (offline).';
+        rateNoteEl.textContent = "Can't reach the internet, so we're using backup rates.";
       }
     }
 
     function render() {
       const cur = currentCurrency();
-      const displayBalance = toDisplayAmount(balanceGBP, cur);
-      balanceEl.textContent = money(displayBalance, cur);
+      balanceEl.textContent = money(toDisplayAmount(balanceGBP, cur), cur);
 
       if (transactions.length === 0) {
-        historyEl.innerHTML = '<li>No transactions yet</li>';
+        historyEl.innerHTML = '<li>Nothing yet — make your first move! 🌟</li>';
         return;
       }
 
       historyEl.innerHTML = '';
       transactions.forEach(t => {
         const li = document.createElement('li');
-
         const left = document.createElement('div');
         left.className = 'txn-main';
-
         const title = document.createElement('span');
-        title.textContent = t.label;
-
+        title.textContent = t.label; // textContent keeps names safe
         const sub = document.createElement('span');
         sub.className = 'txn-sub';
-        sub.textContent = `Stored as GBP ${money(t.amountGBP, 'GBP')}`;
-
+        sub.textContent = 'Saved as ' + money(t.amountGBP, 'GBP');
         left.append(title, sub);
-
         const amt = document.createElement('span');
         amt.className = 'out';
         amt.textContent = '-' + money(toDisplayAmount(t.amountGBP, cur), cur);
-
         li.append(left, amt);
         historyEl.appendChild(li);
       });
@@ -196,12 +306,10 @@
     function checkAmountInSelectedCurrency(amountSelected) {
       const cur = currentCurrency();
       if (isNaN(amountSelected) || amountSelected <= 0) {
-        return `Enter an amount bigger than ${money(0, cur)}.`;
+        return `Oops! Type an amount bigger than ${money(0, cur)}.`;
       }
-
-      const amountGBP = toGBP(amountSelected, cur);
-      if (amountGBP > balanceGBP) {
-        return `Not enough money. Max available is ${money(toDisplayAmount(balanceGBP, cur), cur)}.`;
+      if (toGBP(amountSelected, cur) > balanceGBP + 1e-9) {
+        return `Oops! You only have ${money(toDisplayAmount(balanceGBP, cur), cur)}.`;
       }
       return '';
     }
@@ -211,22 +319,15 @@
         const res = await fetch('https://api.frankfurter.app/latest?from=GBP&to=EUR,USD');
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
-
         if (!data || !data.rates || !data.rates.EUR || !data.rates.USD) {
           throw new Error('Unexpected rates payload');
         }
-
-        rates = {
-          GBP: 1,
-          EUR: Number(data.rates.EUR),
-          USD: Number(data.rates.USD)
-        };
+        rates = { GBP: 1, EUR: Number(data.rates.EUR), USD: Number(data.rates.USD) };
         usingLiveRates = true;
       } catch (err) {
         usingLiveRates = false;
         console.warn('Using fallback rates:', err);
       }
-
       renderRateNote();
       render();
     }
@@ -238,16 +339,14 @@
       const amountSelected = parseFloat(document.getElementById('payAmount').value);
       const cur = currentCurrency();
 
-      if (!payee) return show(msg, 'Type who you are paying.', false);
-
+      if (!payee) return show(msg, 'Oops! Type who you are sending money to.', false);
       const problem = checkAmountInSelectedCurrency(amountSelected);
       if (problem) return show(msg, problem, false);
 
       const amountGBP = toGBP(amountSelected, cur);
-      balanceGBP -= amountGBP;
-      transactions.unshift({ label: 'Paid ' + payee, amountGBP });
-
-      show(msg, `Paid ${money(amountSelected, cur)} to ${payee}!`, true);
+      balanceGBP = Math.max(0, balanceGBP - amountGBP);
+      transactions.unshift({ label: '💸 Sent to ' + payee, amountGBP });
+      show(msg, `Yay! ${money(amountSelected, cur)} sent to ${payee}! 🎉`, true);
       e.target.reset();
       render();
     });
@@ -262,10 +361,9 @@
       if (problem) return show(msg, problem, false);
 
       const amountGBP = toGBP(amountSelected, cur);
-      balanceGBP -= amountGBP;
-      transactions.unshift({ label: 'Cash withdrawal', amountGBP });
-
-      show(msg, `Withdrew ${money(amountSelected, cur)}.`, true);
+      balanceGBP = Math.max(0, balanceGBP - amountGBP);
+      transactions.unshift({ label: '🏧 Cash taken out', amountGBP });
+      show(msg, `Done! You took out ${money(amountSelected, cur)}. 💰`, true);
       e.target.reset();
       render();
     });
