@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NovaPay — My Money Hub</title>
   <style>
-    /* ---------- THEMES (10 kid-friendly options) ---------- */
+    /* ---------- THEMES (10 kid-friendly options, each with a picture scene) ---------- */
     :root, [data-theme="galaxy"] {
       --bg1:#ffffff; --bg2:#e9e6ff; --card:#ffffff; --ink:#2b2370; --text:#3d3a5c; --muted:#5f5c80;
       --border:#cfc9ff; --accent:#5a50e0; --accent2:#2b2370; --on-accent:#ffffff; --tint:#eeedfb;
@@ -57,6 +57,42 @@
       --good:#12713a; --bad:#b4232a; --shadow:0 10px 26px rgba(42,42,90,.16);
     }
 
+    /* ---------- PICTURE SCENES (one per theme, drawn as inline SVG pictures) ---------- */
+    .scene {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-repeat: no-repeat; background-position: center bottom; background-size: cover;
+    }
+    [data-theme="galaxy"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23d9d4ff'/%3E%3Ccircle cx='980' cy='160' r='90' fill='%23a99bff'/%3E%3Cellipse cx='980' cy='160' rx='150' ry='26' fill='none' stroke='%23fff' stroke-width='10' transform='rotate(-20 980 160)'/%3E%3Ccircle cx='160' cy='620' r='60' fill='%23ffb3d9'/%3E%3Ccircle cx='400' cy='120' r='5' fill='%23fff'/%3E%3Ccircle cx='700' cy='80' r='4' fill='%23fff'/%3E%3Ccircle cx='820' cy='420' r='5' fill='%23fff'/%3E%3Ccircle cx='90' cy='260' r='4' fill='%23fff'/%3E%3Cg font-size='54'%3E%3Ctext x='60' y='120'%3E%E2%AD%90%3C/text%3E%3Ctext x='520' y='220'%3E%E2%9C%A8%3C/text%3E%3Ctext x='1060' y='560'%3E%F0%9F%AA%90%3C/text%3E%3Ctext x='300' y='720'%3E%F0%9F%8C%99%3C/text%3E%3Ctext x='760' y='740'%3E%E2%AD%90%3C/text%3E%3Ctext x='1080' y='760'%3E%E2%9C%A8%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="ocean"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23bfe9f7'/%3E%3Cpath d='M0 520 Q150 470 300 520 T600 520 T900 520 T1200 520 V800 H0Z' fill='%2378c8e6'/%3E%3Cpath d='M0 610 Q150 560 300 610 T600 610 T900 610 T1200 610 V800 H0Z' fill='%2347a8d6'/%3E%3Cpath d='M0 700 Q150 650 300 700 T600 700 T900 700 T1200 700 V800 H0Z' fill='%231f86bd'/%3E%3Cg font-size='60'%3E%3Ctext x='80' y='640'%3E%F0%9F%90%A0%3C/text%3E%3Ctext x='360' y='760'%3E%F0%9F%90%99%3C/text%3E%3Ctext x='640' y='600'%3E%F0%9F%90%AC%3C/text%3E%3Ctext x='900' y='740'%3E%F0%9F%90%A2%3C/text%3E%3Ctext x='1060' y='640'%3E%F0%9F%90%A1%3C/text%3E%3Ctext x='200' y='120'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='900' y='140'%3E%E2%98%80%EF%B8%8F%3C/text%3E%3Ctext x='560' y='400'%3E%F0%9F%AB%A7%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="jungle"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23c9ebb0'/%3E%3Cpath d='M0 600 Q200 480 420 590 T820 560 T1200 580 V800 H0Z' fill='%2374b95a'/%3E%3Cpath d='M0 700 Q300 620 600 700 T1200 690 V800 H0Z' fill='%234a9a3a'/%3E%3Cg font-size='80'%3E%3Ctext x='40' y='620'%3E%F0%9F%8C%B4%3C/text%3E%3Ctext x='1060' y='620'%3E%F0%9F%8C%B4%3C/text%3E%3Ctext x='520' y='740'%3E%F0%9F%90%92%3C/text%3E%3C/g%3E%3Cg font-size='56'%3E%3Ctext x='260' y='150'%3E%F0%9F%A6%9C%3C/text%3E%3Ctext x='860' y='220'%3E%F0%9F%A6%8B%3C/text%3E%3Ctext x='180' y='740'%3E%F0%9F%8D%83%3C/text%3E%3Ctext x='880' y='760'%3E%F0%9F%90%8D%3C/text%3E%3Ctext x='1080' y='120'%3E%F0%9F%8C%BA%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="candy"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23ffc9e1'/%3E%3Ccircle cx='140' cy='140' r='70' fill='%23ffe3f0'/%3E%3Ccircle cx='1040' cy='640' r='90' fill='%23ffe3f0'/%3E%3Ccircle cx='620' cy='720' r='60' fill='%23ffa6cf'/%3E%3Cg font-size='64'%3E%3Ctext x='60' y='300'%3E%F0%9F%8D%AD%3C/text%3E%3Ctext x='300' y='110'%3E%F0%9F%8D%AC%3C/text%3E%3Ctext x='560' y='200'%3E%F0%9F%A7%81%3C/text%3E%3Ctext x='900' y='120'%3E%F0%9F%8D%A9%3C/text%3E%3Ctext x='1080' y='330'%3E%F0%9F%8D%AB%3C/text%3E%3Ctext x='140' y='700'%3E%F0%9F%8D%A6%3C/text%3E%3Ctext x='400' y='760'%3E%F0%9F%8D%AA%3C/text%3E%3Ctext x='820' y='770'%3E%F0%9F%8D%B0%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="sunset"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb36b'/%3E%3Cstop offset='1' stop-color='%23ff7a8a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23g)'/%3E%3Ccircle cx='600' cy='560' r='170' fill='%23fff3b0'/%3E%3Cpath d='M0 640 Q200 560 420 640 T820 620 T1200 640 V800 H0Z' fill='%23b8456b'/%3E%3Cpath d='M0 720 Q300 660 600 720 T1200 710 V800 H0Z' fill='%236b2a5a'/%3E%3Cg font-size='56'%3E%3Ctext x='140' y='160'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='900' y='220'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='600' y='120'%3E%F0%9F%A6%8B%3C/text%3E%3Ctext x='1040' y='430'%3E%F0%9F%90%A6%3C/text%3E%3Ctext x='200' y='430'%3E%F0%9F%90%A6%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="space"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%230a0c24'/%3E%3Ccircle cx='1020' cy='620' r='120' fill='%23ff7a59'/%3E%3Ccircle cx='990' cy='590' r='26' fill='%23e0603f'/%3E%3Ccircle cx='100' cy='100' r='3' fill='%23fff'/%3E%3Ccircle cx='300' cy='260' r='4' fill='%23fff'/%3E%3Ccircle cx='520' cy='90' r='3' fill='%23fff'/%3E%3Ccircle cx='700' cy='300' r='4' fill='%23fff'/%3E%3Ccircle cx='900' cy='120' r='3' fill='%23fff'/%3E%3Ccircle cx='1120' cy='260' r='4' fill='%23fff'/%3E%3Ccircle cx='200' cy='520' r='3' fill='%23fff'/%3E%3Ccircle cx='620' cy='620' r='4' fill='%23fff'/%3E%3Cg font-size='64'%3E%3Ctext x='140' y='700'%3E%F0%9F%9A%80%3C/text%3E%3Ctext x='820' y='220'%3E%F0%9F%9B%B8%3C/text%3E%3Ctext x='400' y='140'%3E%F0%9F%8C%99%3C/text%3E%3Ctext x='420' y='560'%3E%F0%9F%91%BD%3C/text%3E%3Ctext x='60' y='330'%3E%E2%AD%90%3C/text%3E%3Ctext x='1000' y='90'%3E%F0%9F%AA%90%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="unicorn"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23e8d8ff'/%3E%3Cg fill='none' stroke-width='22'%3E%3Cpath d='M100 640 A360 360 0 0 1 820 640' stroke='%23ff7aa8'/%3E%3Cpath d='M122 640 A338 338 0 0 1 798 640' stroke='%23ffd36b'/%3E%3Cpath d='M144 640 A316 316 0 0 1 776 640' stroke='%2378e0a0'/%3E%3Cpath d='M166 640 A294 294 0 0 1 754 640' stroke='%2378b8ff'/%3E%3C/g%3E%3Cpath d='M0 720 Q300 660 600 720 T1200 710 V800 H0Z' fill='%23cfb0ff'/%3E%3Cg font-size='64'%3E%3Ctext x='900' y='640'%3E%F0%9F%A6%84%3C/text%3E%3Ctext x='140' y='140'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='700' y='160'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='1040' y='260'%3E%F0%9F%92%96%3C/text%3E%3Ctext x='440' y='260'%3E%E2%9C%A8%3C/text%3E%3Ctext x='60' y='420'%3E%F0%9F%A6%8B%3C/text%3E%3Ctext x='1080' y='120'%3E%E2%AD%90%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="dino"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23efe6b0'/%3E%3Cpath d='M760 640 L900 380 L1040 640Z' fill='%238a6a4a'/%3E%3Cpath d='M860 440 L900 380 L940 440Z' fill='%23ff7a3a'/%3E%3Cpath d='M0 640 Q300 560 600 640 T1200 640 V800 H0Z' fill='%2397b04a'/%3E%3Cpath d='M0 730 Q300 680 600 730 T1200 725 V800 H0Z' fill='%23607a1f'/%3E%3Cg font-size='84'%3E%3Ctext x='80' y='640'%3E%F0%9F%A6%95%3C/text%3E%3Ctext x='440' y='740'%3E%F0%9F%A6%96%3C/text%3E%3C/g%3E%3Cg font-size='56'%3E%3Ctext x='320' y='700'%3E%F0%9F%A5%9A%3C/text%3E%3Ctext x='960' y='370'%3E%F0%9F%8C%8B%3C/text%3E%3Ctext x='200' y='150'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='700' y='200'%3E%F0%9F%A6%95%3C/text%3E%3Ctext x='1040' y='130'%3E%E2%98%80%EF%B8%8F%3C/text%3E%3Ctext x='1060' y='740'%3E%F0%9F%8C%BF%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="robot"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23c8d6df'/%3E%3Cg stroke='%23a3b5c1' stroke-width='2'%3E%3Cpath d='M0 100H1200M0 200H1200M0 300H1200M0 400H1200M0 500H1200M0 600H1200M0 700H1200'/%3E%3Cpath d='M100 0V800M200 0V800M300 0V800M400 0V800M500 0V800M600 0V800M700 0V800M800 0V800M900 0V800M1000 0V800M1100 0V800'/%3E%3C/g%3E%3Crect x='0' y='700' width='1200' height='100' fill='%2386a0b0'/%3E%3Cg font-size='64'%3E%3Ctext x='100' y='680'%3E%F0%9F%A4%96%3C/text%3E%3Ctext x='900' y='160'%3E%E2%9A%99%EF%B8%8F%3C/text%3E%3Ctext x='300' y='160'%3E%F0%9F%94%A7%3C/text%3E%3Ctext x='1020' y='680'%3E%F0%9F%A4%96%3C/text%3E%3Ctext x='560' y='300'%3E%F0%9F%92%A1%3C/text%3E%3Ctext x='60' y='360'%3E%E2%9A%99%EF%B8%8F%3C/text%3E%3Ctext x='1100' y='380'%3E%F0%9F%94%8B%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+    [data-theme="rainbow"] .scene {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1200' height='800' fill='%23d6f0ff'/%3E%3Cg fill='none' stroke-width='26'%3E%3Cpath d='M150 760 A450 450 0 0 1 1050 760' stroke='%23ff6b6b'/%3E%3Cpath d='M176 760 A424 424 0 0 1 1024 760' stroke='%23ffa94d'/%3E%3Cpath d='M202 760 A398 398 0 0 1 998 760' stroke='%23ffe066'/%3E%3Cpath d='M228 760 A372 372 0 0 1 972 760' stroke='%2369db7c'/%3E%3Cpath d='M254 760 A346 346 0 0 1 946 760' stroke='%234dabf7'/%3E%3Cpath d='M280 760 A320 320 0 0 1 920 760' stroke='%23b197fc'/%3E%3C/g%3E%3Cg font-size='64'%3E%3Ctext x='60' y='140'%3E%E2%98%80%EF%B8%8F%3C/text%3E%3Ctext x='240' y='240'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='900' y='160'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='60' y='740'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='1060' y='740'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3Ctext x='1060' y='360'%3E%F0%9F%A6%8B%3C/text%3E%3Ctext x='560' y='120'%3E%F0%9F%8C%88%3C/text%3E%3C/g%3E%3C/svg%3E");
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0; padding: 24px 14px 56px; color: var(--text); line-height: 1.55; font-size: 1.05rem;
@@ -64,7 +100,7 @@
       background: radial-gradient(circle at top, var(--bg1) 0%, var(--bg2) 100%);
       background-attachment: fixed; min-height: 100vh; transition: background .3s;
     }
-    .shell { max-width: 980px; margin: 0 auto; }
+    .shell { max-width: 980px; margin: 0 auto; position: relative; }
     .card {
       background: var(--card); border: 3px solid var(--border);
       border-radius: 26px; box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
@@ -132,7 +168,7 @@
     .txn-sub { font-size: .85rem; color: var(--muted); font-weight: 600; }
     .out { color: var(--bad); font-weight: 900; white-space: nowrap; }
 
-    .tip { background: var(--tint); border-radius: 18px; padding: 12px 14px; font-weight: 700; color: var(--text); }
+    .tip { background: var(--card); border: 3px solid var(--border); border-radius: 18px; padding: 12px 14px; font-weight: 700; color: var(--text); }
 
     @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr; }
@@ -141,6 +177,7 @@
   </style>
 </head>
 <body>
+  <div class="scene" aria-hidden="true"></div>
   <main class="shell">
     <section class="card">
       <div class="eyebrow">⭐ NovaPay</div>
